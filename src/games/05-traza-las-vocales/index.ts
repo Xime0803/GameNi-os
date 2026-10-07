@@ -75,12 +75,19 @@ export class TrazaLasVocalesGame implements MiniGame {
     `;
 
     const canvas = this.container.querySelector('#letter-canvas') as HTMLCanvasElement;
-    this.tracingService = new TracingService(canvas, 0.78);
+    this.tracingService = new TracingService(canvas, 0.50);
 
     const fillBar = this.container.querySelector('#letter-coverage-bar') as HTMLElement;
     this.tracingService.setOnStrokeUpdate((cov) => {
       const pct = Math.min(100, Math.round(cov * 100));
       fillBar.style.width = `${pct}%`;
+      if (pct >= 50) {
+        fillBar.style.background = 'linear-gradient(90deg, #10B981, #059669)';
+        fillBar.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.6)';
+      } else {
+        fillBar.style.background = 'linear-gradient(90deg, #F59E0B, #EAB308)';
+        fillBar.style.boxShadow = 'none';
+      }
     });
 
     const clearBtn = new BigButton({
@@ -141,14 +148,6 @@ export class TrazaLasVocalesGame implements MiniGame {
     if (!this.tracingService) return;
     const result = this.tracingService.evaluate();
 
-    if (result.wentBackwards) {
-      this.misses++;
-      this.difficulty.recordMiss();
-      audioService.playGentleHint();
-      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
-      return;
-    }
-
     if (result.passed) {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
@@ -163,7 +162,7 @@ export class TrazaLasVocalesGame implements MiniGame {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
+      this.ximenita?.giveHint('¡Casi lo logras! Sigue la línea azul un poquito más con tu dedito.');
     }
   }
 

@@ -7,12 +7,13 @@ export class TracingService {
   private samplePoints: { x: number; y: number }[] = [];
   private visitedIndices: Set<number> = new Set();
   private isDrawing: boolean = false;
-  private lastVisitedIndex: number = -1;
-  private reverseDetections: number = 0;
-  private threshold: number = 0.78;
+  private lastX: number = -1;
+  private lastY: number = -1;
+  // Margen de error pedagógico infantil: 50% de cobertura es éxito rotundo para motricidad fina de 3 a 10 años
+  private threshold: number = 0.50;
   private onStrokeUpdate?: (coverage: number) => void;
 
-  constructor(canvas: HTMLCanvasElement, threshold: number = 0.78) {
+  constructor(canvas: HTMLCanvasElement, threshold: number = 0.50) {
     this.canvas = canvas;
     const context = canvas.getContext('2d');
     if (!context) throw new Error('Canvas 2D context not supported');
@@ -23,7 +24,7 @@ export class TracingService {
 
   public setGuide(guide: TracingGuide): void {
     this.guide = guide;
-    this.samplePoints = this.sampleSvgPath(guide.svgPath, 60);
+    this.samplePoints = this.sampleSvgPath(guide.svgPath, 50);
     this.clear();
   }
 
@@ -33,8 +34,8 @@ export class TracingService {
 
   public clear(): void {
     this.visitedIndices.clear();
-    this.lastVisitedIndex = -1;
-    this.reverseDetections = 0;
+    this.lastX = -1;
+    this.lastY = -1;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.drawBackgroundGuide();
   }
@@ -70,10 +71,10 @@ export class TracingService {
     const scaleX = this.canvas.width / 100;
     const scaleY = this.canvas.height / 140;
 
-    // 1. Dibujar contorno de guía azul punteada
+    // 1. Dibujar contorno de guía azul punteada amplia y clara
     this.ctx.save();
     this.ctx.scale(scaleX, scaleY);
-    this.ctx.lineWidth = 10;
+    this.ctx.lineWidth = 14;
     this.ctx.strokeStyle = '#93C5FD'; // Azul cielo suave
     this.ctx.setLineDash([8, 8]);
     this.ctx.lineCap = 'round';
@@ -83,20 +84,20 @@ export class TracingService {
     this.ctx.stroke(path2D);
     this.ctx.restore();
 
-    // 2. Dibujar punto rojo de inicio (start dot)
+    // 2. Dibujar punto rojo de inicio (start dot) visible
     const startX = this.guide.startingPoint.x * scaleX;
     const startY = this.guide.startingPoint.y * scaleY;
 
     this.ctx.save();
     this.ctx.beginPath();
-    this.ctx.arc(startX, startY, 14, 0, Math.PI * 2);
+    this.ctx.arc(startX, startY, 15, 0, Math.PI * 2);
     this.ctx.fillStyle = '#EF4444'; // Rojo vivo
     this.ctx.fill();
     this.ctx.lineWidth = 4;
     this.ctx.strokeStyle = '#FFFFFF';
     this.ctx.stroke();
 
-    // Pulso o brillo interior en el punto rojo
+    // Brillo interior en el punto rojo
     this.ctx.beginPath();
     this.ctx.arc(startX, startY, 6, 0, Math.PI * 2);
     this.ctx.fillStyle = '#FFFFFF';
@@ -121,6 +122,8 @@ export class TracingService {
     const endDrawing = (e: PointerEvent) => {
       if (this.isDrawing) {
         this.isDrawing = false;
+        this.lastX = -1;
+        this.lastY = -1;
         try {
           this.canvas.releasePointerCapture(e.pointerId);
         } catch {
@@ -133,41 +136,43 @@ export class TracingService {
     this.canvas.addEventListener('pointercancel', endDrawing);
   }
 
-  private handlePointer(e: PointerEvent, _isStart: boolean): void {
+  private handlePointer(e: PointerEvent, isStart: boolean): void {
     const rect = this.canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Dibujar trazo del niño en vivo
+    // Dibujar trazo continuo y suave con interpolación
     this.ctx.save();
-    this.ctx.lineWidth = 14;
+    this.ctx.lineWidth = 18;
     this.ctx.lineCap = 'round';
     this.ctx.lineJoin = 'round';
     this.ctx.strokeStyle = '#FF6B6B'; // Trazo coral cálido
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, 7, 0, Math.PI * 2);
     this.ctx.fillStyle = '#FF6B6B';
-    this.ctx.fill();
-    this.ctx.restore();
 
-    // Normalizar a escala 0..100 y 0..140
-    const normX = (x / this.canvas.width) * 100;
-    const normY = (y / this.canvas.height) * 140;
+    if (isStart || this.lastX < 0 || this.lastY < 0) {
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, 9, 0, Math.PI * 2);
+      this.ctx.fill();
+      this.checkHit(x, y);
+    } else {
+      this.ctx.beginPath();
+      this.ctx.moveTo(this.lastX, this.lastY);
+      this.ctx.lineTo(x, y);
+      this.ctx.stroke();
 
-    // Verificar proximidad con puntos de guía
-    const tolerance = 18; // Radio de tolerancia táctil para dedos pequeños
-    for (let i = 0; i < this.samplePoints.length; i++) {
-      const pt = this.samplePoints[i];
-      const dist = Math.hypot(normX - pt.x, normY - pt.y);
-      if (dist <= tolerance) {
-        // Chequeo de sentido/retroceso
-        if (this.lastVisitedIndex >= 0 && i < this.lastVisitedIndex - 5) {
-          this.reverseDetections++;
-        }
-        this.lastVisitedIndex = i;
-        this.visitedIndices.add(i);
+      // Interpolación entre puntos consecutivos para no perder muestras al dibujar rápido
+      const dist = Math.hypot(x - this.lastX, y - this.lastY);
+      const steps = Math.max(1, Math.floor(dist / 6));
+      for (let s = 1; s <= steps; s++) {
+        const ix = this.lastX + ((x - this.lastX) * s) / steps;
+        const iy = this.lastY + ((y - this.lastY) * s) / steps;
+        this.checkHit(ix, iy);
       }
     }
+    this.ctx.restore();
+
+    this.lastX = x;
+    this.lastY = y;
 
     const currentCoverage = this.samplePoints.length > 0
       ? this.visitedIndices.size / this.samplePoints.length
@@ -178,6 +183,24 @@ export class TracingService {
     }
   }
 
+  // Comprueba cercanía con margen de error generoso para dedos infantiles
+  private checkHit(canvasX: number, canvasY: number): void {
+    const normX = (canvasX / this.canvas.width) * 100;
+    const normY = (canvasY / this.canvas.height) * 140;
+
+    // Margen de error holgado (26 unidades sobre 100)
+    const tolerance = 26;
+
+    for (let i = 0; i < this.samplePoints.length; i++) {
+      if (this.visitedIndices.has(i)) continue;
+      const pt = this.samplePoints[i];
+      const dist = Math.hypot(normX - pt.x, normY - pt.y);
+      if (dist <= tolerance) {
+        this.visitedIndices.add(i);
+      }
+    }
+  }
+
   public evaluate(): TracingResult {
     const total = this.samplePoints.length;
     if (total === 0) {
@@ -185,18 +208,16 @@ export class TracingService {
     }
 
     const coveredRatio = this.visitedIndices.size / total;
-    const wentBackwards = this.reverseDetections > 4;
+    // Margen de error pedagógico infantil: con 50% de cobertura, el niño ya reconoció y trazó la forma
     const passed = coveredRatio >= this.threshold;
 
     return {
       covered: Math.min(1.0, Math.round(coveredRatio * 100) / 100),
       passed,
-      wentBackwards,
-      message: wentBackwards
-        ? '¡Recuerda seguir la dirección correcta desde el punto rojo!'
-        : passed
-        ? '¡Excelente trazo! ¡Muy derechito!'
-        : '¡Casi lo logras! Cubre un poquito más de la línea punteada.',
+      wentBackwards: false,
+      message: passed
+        ? '¡Excelente trazo! ¡Lo hiciste muy bien!'
+        : '¡Casi lo logras! Sigue la línea azul un poquito más.',
     };
   }
 }

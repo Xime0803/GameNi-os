@@ -26,12 +26,13 @@ export class StarBar {
     leftContainer.className = 'top-bar-left';
 
     this.backBtn = new BigButton({
-      icon: '🎪',
-      text: 'Menú Principal',
+      icon: '⬅️',
+      text: 'Regresar al Panel Principal',
       color: 'sky',
-      ariaLabel: 'Volver al menú principal del circo',
-      className: 'btn-back-to-menu pulse-gentle',
+      ariaLabel: 'Volver al panel principal del circo',
+      className: 'btn-back-to-menu',
       onClick: () => {
+        audioService.playClick();
         if (this.onBackToMapCallback) {
           this.onBackToMapCallback();
         }
@@ -108,7 +109,7 @@ export class StarBar {
     return this.element;
   }
 
-  public setBackToMapVisible(visible: boolean, label: string = 'Menú Principal'): void {
+  public setBackToMapVisible(visible: boolean, label: string = 'Regresar al Panel Principal'): void {
     if (this.backBtn) {
       this.backBtn.getElement().style.display = visible ? 'inline-flex' : 'none';
       const textEl = this.backBtn.getElement().querySelector('.btn-text');

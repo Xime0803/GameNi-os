@@ -60,33 +60,53 @@ export class SceneManager {
     this.currentGame = game;
     this.contentContainer.innerHTML = '';
 
-    // Mostrar botón de volver al menú en la barra superior
-    this.starBar.setBackToMapVisible(true, '🎪 Menú Principal');
+    // Actualizar barra de estado superior
+    this.starBar.setBackToMapVisible(true, '⬅️ Regresar al Panel Principal');
 
     const gameWrapper = document.createElement('div');
     gameWrapper.className = 'game-scene-wrapper';
     gameWrapper.style.width = '100%';
     gameWrapper.style.height = '100%';
+    gameWrapper.style.display = 'flex';
+    gameWrapper.style.flexDirection = 'column';
     gameWrapper.style.position = 'relative';
 
-    // Barra de retorno directo flotante en la esquina
-    const floatingReturnBar = document.createElement('div');
-    floatingReturnBar.className = 'floating-back-bar';
-    floatingReturnBar.innerHTML = `
-      <button class="btn-return-circus" aria-label="Volver al menú principal del circo">
-        <span>🎪</span> <span>Volver al Menú Principal</span>
+    // Barra de navegación permanente y destacada (NUNCA sobrescrita por el juego)
+    const navBar = document.createElement('div');
+    navBar.className = 'game-nav-bar-persistent';
+    navBar.innerHTML = `
+      <button class="btn-return-main-panel" id="btn-scene-back-main" aria-label="Regresar al panel principal del circo">
+        <span class="back-btn-icon">⬅️</span>
+        <span class="back-btn-text">Regresar al Panel Principal</span>
       </button>
+      <div class="game-nav-info-group">
+        <span class="game-title-badge">🎪 ${game.config.title}</span>
+        <a href="./panel.html" class="btn-nav-adults-link" aria-label="Ir al Panel de Adultos y Gestión">
+          <span>🔒 Panel de Adultos</span>
+        </a>
+      </div>
     `;
-    floatingReturnBar.querySelector('.btn-return-circus')?.addEventListener('click', () => {
+
+    navBar.querySelector('#btn-scene-back-main')?.addEventListener('click', () => {
       audioService.playClick();
       this.showMap();
     });
-    gameWrapper.appendChild(floatingReturnBar);
 
+    // Escenario aislado donde se renderiza el juego (evita que el innerHTML del juego destruya la navegación)
+    const gameStage = document.createElement('div');
+    gameStage.className = 'game-stage-mount';
+    gameStage.style.flex = '1';
+    gameStage.style.width = '100%';
+    gameStage.style.height = '100%';
+    gameStage.style.overflow = 'hidden';
+    gameStage.style.position = 'relative';
+
+    gameWrapper.appendChild(navBar);
+    gameWrapper.appendChild(gameStage);
     this.contentContainer.appendChild(gameWrapper);
     this.injectSceneStylesOnce();
 
-    await game.mount(gameWrapper, (result) => this.handleGameComplete(result));
+    await game.mount(gameStage, (result) => this.handleGameComplete(result));
   }
 
   private async handleGameComplete(result: MiniGameSessionResult): Promise<void> {
@@ -150,36 +170,88 @@ export class SceneManager {
     const style = document.createElement('style');
     style.id = 'scene-manager-styles';
     style.textContent = `
-      .floating-back-bar {
-        position: absolute;
-        top: 14px;
-        left: 20px;
-        z-index: 80;
+      .game-nav-bar-persistent {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 20px;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(10px);
+        border-bottom: 3px solid #BAE6FD;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        z-index: 100;
+        flex-shrink: 0;
       }
 
-      .btn-return-circus {
-        background: #FFFFFFEE;
-        border: 3px solid var(--color-sky);
-        padding: 8px 18px;
-        border-radius: var(--radius-full);
-        font-size: 17px;
-        font-weight: 700;
-        color: #0369A1;
+      .btn-return-main-panel {
+        background: linear-gradient(135deg, #0284C7, #0369A1);
+        color: #FFFFFF;
+        border: 2px solid #BAE6FD;
+        border-radius: 9999px;
+        padding: 8px 20px;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         cursor: pointer;
-        box-shadow: var(--shadow-sm);
-        transition: transform var(--transition-fast), background 0.2s;
+        font-family: inherit;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       }
 
-      .btn-return-circus:hover {
-        transform: scale(1.06);
-        background: #EFF6FF;
+      .btn-return-main-panel:hover {
+        transform: scale(1.04);
+        background: linear-gradient(135deg, #0369A1, #075985);
+        box-shadow: 0 6px 16px rgba(2, 132, 199, 0.45);
       }
 
-      .btn-return-circus:active {
+      .btn-return-main-panel:active {
         transform: scale(0.96);
+      }
+
+      .back-btn-icon {
+        font-size: 20px;
+      }
+
+      .back-btn-text {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+      }
+
+      .game-nav-info-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .game-title-badge {
+        background: #F0F9FF;
+        color: #0369A1;
+        border: 2px solid #BAE6FD;
+        border-radius: 9999px;
+        padding: 6px 16px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .btn-nav-adults-link {
+        background: #F3E8FF;
+        color: #7E22CE;
+        border: 2px solid #D8B4FE;
+        border-radius: 9999px;
+        padding: 6px 14px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.15s ease, transform 0.15s ease;
+      }
+
+      .btn-nav-adults-link:hover {
+        background: #E9D5FF;
+        transform: scale(1.04);
       }
     `;
     document.head.appendChild(style);

@@ -111,6 +111,9 @@ export class SpeechService {
     return () => this.onSpeechEndCallbacks.delete(cb);
   }
 
+  private activeUtterance: SpeechSynthesisUtterance | null = null;
+  private cancelTimeoutId: any = null;
+
   public speak(text: string, onEnd?: () => void): void {
     if (this.isMuted || !this.synth || !text.trim()) {
       if (onEnd) setTimeout(onEnd, 300);
@@ -118,8 +121,34 @@ export class SpeechService {
     }
 
     try {
-      this.synth.cancel(); // Cancelar locución previa para evitar acumulación
+      if (this.cancelTimeoutId) {
+        clearTimeout(this.cancelTimeoutId);
+        this.cancelTimeoutId = null;
+      }
 
+      const wasSpeaking = this.synth.speaking || this.synth.pending;
+      if (wasSpeaking) {
+        this.synth.cancel();
+      }
+
+      // Pequeño retardo (45ms) para permitir que el proceso de síntesis de Chromium
+      // finalice la cancelación antes de encolar la nueva locución
+      this.cancelTimeoutId = setTimeout(() => {
+        this.doSpeak(text, onEnd);
+      }, wasSpeaking ? 50 : 10);
+    } catch (err) {
+      console.warn('[SpeechService] Error al preparar voz:', err);
+      if (onEnd) onEnd();
+    }
+  }
+
+  private doSpeak(text: string, onEnd?: () => void): void {
+    if (!this.synth || this.isMuted) {
+      if (onEnd) onEnd();
+      return;
+    }
+
+    try {
       if (!this.currentVoice) {
         this.initVoices();
       }
@@ -129,17 +158,23 @@ export class SpeechService {
       }
 
       const utterance = new SpeechSynthesisUtterance(text);
+      this.activeUtterance = utterance; // Evitar que el recolector de basura de Chrome destruya la locución
+
       if (this.currentVoice) {
         utterance.voice = this.currentVoice;
+        utterance.lang = this.currentVoice.lang;
+      } else {
+        utterance.lang = 'es-ES';
       }
-      utterance.lang = this.currentVoice?.lang || 'es-PE';
+
       utterance.rate = this.speedRates[this.currentSpeed];
-      utterance.pitch = 1.15; // Tono cálido, amigable e infantil
+      utterance.pitch = 1.15; // Tono amigable, cálido e infantil de Ximenita
 
       let ended = false;
       const finish = () => {
         if (ended) return;
         ended = true;
+        this.activeUtterance = null;
         this.onSpeechEndCallbacks.forEach((cb) => cb());
         if (onEnd) onEnd();
       };
@@ -151,8 +186,8 @@ export class SpeechService {
       utterance.onend = finish;
       utterance.onerror = finish;
 
-      // Respaldo por si el motor TTS del navegador no dispara onend
-      const fallbackMs = Math.max(3000, (text.length / 8) * 1000);
+      // Respaldo de seguridad temporal por si el evento onend del navegador se congela
+      const fallbackMs = Math.max(2500, (text.length / 7) * 1000);
       setTimeout(() => {
         if (!ended) finish();
       }, fallbackMs);
@@ -164,9 +199,16 @@ export class SpeechService {
     }
   }
 
+  public isBusy(): boolean {
+    return Boolean(this.activeUtterance || (this.synth && (this.synth.speaking || this.synth.pending)));
+  }
+
   public cancel(): void {
     if (this.synth) {
       this.synth.cancel();
+    }
+    if (this.activeUtterance) {
+      this.activeUtterance = null;
     }
     this.onSpeechEndCallbacks.forEach((cb) => cb());
   }

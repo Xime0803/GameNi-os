@@ -36,6 +36,9 @@ export class MapScreen {
           </div>
           <div class="circus-decorations">
             ${circusInfo.decorations.map((d) => `<span class="dec-tag">${d}</span>`).join(' ')}
+            <a href="./panel.html" class="circus-panel-quicklink" aria-label="Abrir Panel de Adultos y Gestión">
+              <span>🔒 Panel de Padres y Maestros</span>
+            </a>
           </div>
         </div>
 
@@ -193,6 +196,26 @@ export class MapScreen {
         border-radius: var(--radius-full);
         font-size: 15px;
         font-weight: 700;
+      }
+
+      .circus-panel-quicklink {
+        background: #F3E8FF;
+        color: #7E22CE;
+        border: 2px solid #D8B4FE;
+        padding: 6px 14px;
+        border-radius: var(--radius-full);
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: transform 0.15s ease, background 0.15s ease;
+      }
+
+      .circus-panel-quicklink:hover {
+        background: #E9D5FF;
+        transform: scale(1.05);
       }
 
       .attractions-grid {

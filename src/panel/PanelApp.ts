@@ -118,8 +118,8 @@ export class PanelApp {
             </button>
 
             <!-- Retorno al Circo Infantil -->
-            <a href="./index.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-              🎪 Ir al Juego
+            <a href="./index.html" class="btn-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; padding: 9px 18px;">
+              🎪 Volver al Circo / Juego
             </a>
           </div>
         </header>

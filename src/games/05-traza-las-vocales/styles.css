@@ -1,0 +1,20 @@
+.traza-vocales-game {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 32px;
+  background: radial-gradient(circle at center, #F0FDF4 0%, #DCFCE7 100%);
+}
+
+.traza-vocales-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 650px;
+  flex: 1;
+  justify-content: center;
+}

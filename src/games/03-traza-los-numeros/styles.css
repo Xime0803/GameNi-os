@@ -1,0 +1,64 @@
+.trazado-game {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 32px;
+  position: relative;
+  background: radial-gradient(circle at center, #FFFDF5 0%, #FEF3C7 100%);
+}
+
+.trazado-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 650px;
+  flex: 1;
+  justify-content: center;
+}
+
+.canvas-card-wrapper {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  border: 5px solid var(--color-sun);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.tracing-canvas {
+  width: 280px;
+  height: 380px;
+  background: #FAFAFA;
+  border-radius: var(--radius-md);
+  border: 2px dashed #CBD5E1;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.coverage-bar-container {
+  width: 100%;
+  height: 14px;
+  background: #E2E8F0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.coverage-bar-fill {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #F59E0B, #10B981);
+  transition: width 0.15s ease;
+}
+
+.trazado-actions {
+  display: flex;
+  gap: 20px;
+}

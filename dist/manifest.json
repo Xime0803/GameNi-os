@@ -1,0 +1,17 @@
+{
+  "name": "El Mundo de Ximenita",
+  "short_name": "Ximenita",
+  "description": "Videojuego web educativo circense para niños de 3 a 10 años",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#FFF9F0",
+  "theme_color": "#FF6B6B",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎪</text></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

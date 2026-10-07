@@ -1,0 +1,50 @@
+:root {
+  /* Paleta cromática lúdica principal (El Circo de Ximenita) */
+  --color-coral: #FF6B6B;
+  --color-coral-dark: #E05353;
+  --color-sun: #FFD93D;
+  --color-sun-dark: #F0C419;
+  --color-leaf: #6BCB77;
+  --color-leaf-dark: #52B55E;
+  --color-sky: #4D96FF;
+  --color-sky-dark: #2F7DF0;
+  --color-lavender: #B983FF;
+  --color-lavender-dark: #9E64F5;
+
+  /* Fondos suaves y accesibles */
+  --bg-gradient-start: #FFF9F0;
+  --bg-gradient-end: #E8F4FF;
+  --surface-white: #FFFFFF;
+  --surface-card: #FFFFFFEE;
+
+  /* Rasgos y colores de Ximenita */
+  --ximenita-hair: #C89B6B;
+  --ximenita-hair-highlight: #E6C79A;
+  --ximenita-skin: #F6D7B8;
+  --ximenita-cheeks: #F4A7A0;
+  --ximenita-dress: #FF8FA3;
+  --ximenita-dress-dark: #E66B82;
+
+  /* Tipografía */
+  --font-display: 'Fredoka', 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-body: 'Nunito', 'Fredoka', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Dimensiones ergonómicas para niños (Touch targets >= 80px) */
+  --touch-target-min: 80px;
+  --touch-spacing: 16px;
+  --radius-sm: 16px;
+  --radius-md: 24px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+
+  /* Sombras amigables */
+  --shadow-sm: 0 4px 10px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.14);
+  --shadow-bounce: 0 8px 0 rgba(0, 0, 0, 0.12);
+
+  /* Transiciones y micro-animaciones */
+  --transition-fast: 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-normal: 0.25s ease;
+  --transition-bounce: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}

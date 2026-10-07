@@ -1,0 +1,118 @@
+/* Estilos y Micro-animaciones del Entorno Lúdico Infantil */
+
+.btn-big {
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  padding: 16px 28px;
+  border-radius: var(--radius-lg);
+  font-size: 28px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  box-shadow: var(--shadow-bounce);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-big:active {
+  transform: translateY(6px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.btn-coral { background: linear-gradient(180deg, var(--color-coral), var(--color-coral-dark)); }
+.btn-sun { background: linear-gradient(180deg, var(--color-sun), var(--color-sun-dark)); color: #5D4037; text-shadow: none; }
+.btn-leaf { background: linear-gradient(180deg, var(--color-leaf), var(--color-leaf-dark)); }
+.btn-sky { background: linear-gradient(180deg, var(--color-sky), var(--color-sky-dark)); }
+.btn-lavender { background: linear-gradient(180deg, var(--color-lavender), var(--color-lavender-dark)); }
+
+/* Micro-animación de pulso para invitar al niño a tocar */
+.pulse-gentle {
+  animation: pulseGentle 2.2s infinite ease-in-out;
+}
+
+@keyframes pulseGentle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Burbuja de habla de Ximenita */
+.speech-bubble {
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 16px 24px;
+  box-shadow: var(--shadow-md);
+  border: 4px solid var(--ximenita-dress);
+  position: relative;
+  font-size: 24px;
+  font-weight: 600;
+  color: #374151;
+  max-width: 440px;
+  animation: popIn 0.35s var(--transition-bounce);
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 36px;
+  border-width: 16px 16px 0;
+  border-style: solid;
+  border-color: var(--ximenita-dress) transparent;
+  display: block;
+  width: 0;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.7) translateY(15px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Barra superior */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  z-index: 100;
+  width: 100%;
+}
+
+.top-bar-left, .top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.star-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFFDD;
+  backdrop-filter: blur(8px);
+  padding: 10px 22px;
+  border-radius: var(--radius-full);
+  font-size: 26px;
+  font-weight: 700;
+  color: #B45309;
+  box-shadow: var(--shadow-sm);
+  border: 3px solid var(--color-sun);
+}
+
+/* Indicador de límite de tiempo diario */
+.timer-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFFDD;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 18px;
+  font-weight: 600;
+  color: #4B5563;
+  box-shadow: var(--shadow-sm);
+}

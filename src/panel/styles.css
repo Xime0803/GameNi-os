@@ -1,0 +1,271 @@
+@import '../styles/tokens.css';
+@import '../styles/panel-theme.css';
+
+/* Estilos específicos para la aplicación del Panel de Familias y Docentes */
+
+.panel-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-selector-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel-surface-subtle);
+  padding: 6px 12px;
+  border-radius: var(--panel-radius-md);
+  border: 1px solid var(--panel-border);
+}
+
+.profile-selector-box select {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--panel-text-primary);
+  outline: none;
+  cursor: pointer;
+}
+
+.theme-toggle-btn {
+  padding: 8px 12px;
+  border-radius: var(--panel-radius-sm);
+  background: var(--panel-surface);
+  border: 1px solid var(--panel-border);
+  color: var(--panel-text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.theme-toggle-btn:hover {
+  color: var(--panel-text-primary);
+  border-color: var(--panel-text-muted);
+}
+
+/* Gráficos de barras de dominio CNEB */
+.competency-card {
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius-md);
+  padding: 20px;
+  margin-bottom: 16px;
+  background: var(--panel-surface);
+}
+
+.competency-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.competency-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--panel-text-primary);
+}
+
+.competency-cycle {
+  font-size: 13px;
+  color: var(--panel-text-muted);
+  margin-top: 2px;
+}
+
+.cneb-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-ad { background: var(--panel-success-light); color: var(--panel-success); }
+.badge-a { background: #DBEAFE; color: #1E40AF; }
+.badge-b { background: var(--panel-warning-light); color: var(--panel-warning); }
+.badge-c { background: #F1F5F9; color: #64748B; }
+
+.progress-bar-bg {
+  width: 100%;
+  height: 12px;
+  background: var(--panel-surface-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+/* Tabla de detalle de juegos */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.panel-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.panel-table th {
+  padding: 12px 16px;
+  background: var(--panel-surface-subtle);
+  color: var(--panel-text-secondary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.panel-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--panel-border);
+  color: var(--panel-text-primary);
+}
+
+.panel-table tr:hover td {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+/* Tarjetas de recomendaciones */
+.rec-card {
+  border-left: 4px solid var(--panel-primary);
+  background: var(--panel-surface);
+  border-radius: 0 var(--panel-radius-md) var(--panel-radius-md) 0;
+  border-top: 1px solid var(--panel-border);
+  border-right: 1px solid var(--panel-border);
+  border-bottom: 1px solid var(--panel-border);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.rec-card.priority-alta {
+  border-left-color: var(--panel-danger);
+}
+
+.rec-card.priority-positiva {
+  border-left-color: var(--panel-success);
+}
+
+.rec-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--panel-text-primary);
+  margin-bottom: 8px;
+}
+
+.rec-item {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.rec-item strong {
+  color: var(--panel-text-secondary);
+}
+
+/* Modo Aula Percentiles */
+.cohort-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.cohort-stat-box {
+  background: var(--panel-surface-subtle);
+  padding: 16px;
+  border-radius: var(--panel-radius-md);
+  text-align: center;
+}
+
+.cohort-stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--panel-primary);
+}
+
+.cohort-stat-label {
+  font-size: 13px;
+  color: var(--panel-text-muted);
+  margin-top: 4px;
+}
+
+/* Ajustes Form */
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 650px;
+}
+
+.settings-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.settings-label h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--panel-text-primary);
+}
+
+.settings-label p {
+  font-size: 13px;
+  color: var(--panel-text-muted);
+}
+
+.settings-control select, .settings-control input[type="text"], .settings-control input[type="password"] {
+  padding: 8px 14px;
+  border-radius: var(--panel-radius-sm);
+  border: 1px solid var(--panel-border);
+  background: var(--panel-surface);
+  color: var(--panel-text-primary);
+  font-size: 14px;
+}
+
+.btn-danger {
+  background: var(--panel-danger);
+  color: #FFF;
+  padding: 8px 16px;
+  border-radius: var(--panel-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn-danger:hover {
+  background: #B91C1C;
+}
+
+/* Legal y Acerca de */
+.legal-box {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--panel-text-secondary);
+}
+
+.legal-box h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--panel-text-primary);
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.legal-box p, .legal-box ul {
+  margin-bottom: 12px;
+}
+
+.legal-box ul {
+  padding-left: 20px;
+}

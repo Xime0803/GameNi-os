@@ -1,0 +1,80 @@
+.bosque-game {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px 32px;
+  position: relative;
+  background: radial-gradient(circle at center, #F0FDF4 0%, #DCFCE7 100%);
+}
+
+.bosque-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 850px;
+  flex: 1;
+  justify-content: center;
+}
+
+.listen-again-btn {
+  background: #FFFFFFEE;
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 20px;
+  font-weight: 700;
+  color: #15803D;
+  border: 3px solid #86EFAC;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform var(--transition-bounce);
+}
+
+.listen-again-btn:hover {
+  transform: scale(1.05);
+}
+
+.forest-trees-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+}
+
+.tree-card {
+  width: 120px;
+  height: 150px;
+  background: #FFFFFFEE;
+  border-radius: var(--radius-lg);
+  border: 4px solid #16A34A;
+  box-shadow: var(--shadow-bounce);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tree-card:hover {
+  transform: translateY(-6px) scale(1.04);
+}
+
+.tree-icon {
+  font-size: 42px;
+}
+
+.tree-number {
+  font-size: 32px;
+  font-weight: 800;
+  color: #166534;
+}

@@ -1,20 +1,47 @@
 @import '../styles/tokens.css';
 @import '../styles/panel-theme.css';
 
-/* Estilos específicos para la aplicación del Panel de Familias y Docentes */
+/* ==========================================================================
+   Estilos de Componentes para el Panel de Control y Gestión Educativa
+   ========================================================================== */
 
 .panel-header-controls {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Badges de Rol */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--panel-radius-full, 999px);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.role-badge-admin {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--panel-primary);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.role-badge-parent {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--panel-success);
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .profile-selector-box {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--panel-surface-subtle);
-  padding: 6px 12px;
+  background: var(--panel-surface);
+  padding: 6px 14px;
   border-radius: var(--panel-radius-md);
   border: 1px solid var(--panel-border);
 }
@@ -22,7 +49,7 @@
 .profile-selector-box select {
   background: transparent;
   border: none;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--panel-text-primary);
   outline: none;
@@ -30,28 +57,88 @@
 }
 
 .theme-toggle-btn {
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: var(--panel-radius-sm);
   background: var(--panel-surface);
   border: 1px solid var(--panel-border);
   color: var(--panel-text-secondary);
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
+  transition: all 0.15s ease;
 }
 
 .theme-toggle-btn:hover {
   color: var(--panel-text-primary);
-  border-color: var(--panel-text-muted);
+  background: var(--panel-surface-hover);
+  border-color: var(--panel-border-subtle);
+}
+
+.btn-logout {
+  padding: 8px 14px;
+  border-radius: var(--panel-radius-sm);
+  background: var(--panel-surface-subtle);
+  border: 1px solid var(--panel-border);
+  color: var(--panel-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-logout:hover {
+  color: var(--panel-danger);
+  border-color: var(--panel-danger);
+  background: var(--panel-danger-light);
+}
+
+/* Badge de Código de 6 Dígitos */
+.code-badge-pill {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  padding: 6px 12px;
+  background: var(--panel-surface-subtle);
+  color: var(--panel-text-primary);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon-action {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: var(--panel-text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s;
+}
+
+.btn-icon-action:hover {
+  color: var(--panel-primary);
+  border-color: var(--panel-primary);
+  background: var(--panel-primary-light);
 }
 
 /* Gráficos de barras de dominio CNEB */
 .competency-card {
   border: 1px solid var(--panel-border);
   border-radius: var(--panel-radius-md);
-  padding: 20px;
+  padding: 20px 22px;
   margin-bottom: 16px;
   background: var(--panel-surface);
 }
@@ -64,33 +151,33 @@
 }
 
 .competency-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--panel-text-primary);
 }
 
 .competency-cycle {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--panel-text-muted);
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .cneb-badge {
   padding: 4px 10px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
 }
 
 .badge-ad { background: var(--panel-success-light); color: var(--panel-success); }
-.badge-a { background: #DBEAFE; color: #1E40AF; }
+.badge-a { background: rgba(59, 130, 246, 0.15); color: var(--panel-primary); }
 .badge-b { background: var(--panel-warning-light); color: var(--panel-warning); }
-.badge-c { background: #F1F5F9; color: #64748B; }
+.badge-c { background: var(--panel-surface-subtle); color: var(--panel-text-muted); }
 
 .progress-bar-bg {
   width: 100%;
-  height: 12px;
+  height: 10px;
   background: var(--panel-surface-subtle);
   border-radius: 999px;
   overflow: hidden;
@@ -103,10 +190,12 @@
   transition: width 0.4s ease;
 }
 
-/* Tabla de detalle de juegos */
+/* Tabla de Detalle y Gestión de Alumnos */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius-md);
 }
 
 .panel-table {
@@ -122,19 +211,27 @@
   color: var(--panel-text-secondary);
   font-weight: 600;
   border-bottom: 1px solid var(--panel-border);
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .panel-table td {
   padding: 14px 16px;
   border-bottom: 1px solid var(--panel-border);
   color: var(--panel-text-primary);
+  vertical-align: middle;
 }
 
 .panel-table tr:hover td {
-  background: rgba(0, 0, 0, 0.015);
+  background: rgba(128, 128, 128, 0.03);
 }
 
-/* Tarjetas de recomendaciones */
+.panel-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Recomendaciones */
 .rec-card {
   border-left: 4px solid var(--panel-primary);
   background: var(--panel-surface);
@@ -142,7 +239,7 @@
   border-top: 1px solid var(--panel-border);
   border-right: 1px solid var(--panel-border);
   border-bottom: 1px solid var(--panel-border);
-  padding: 20px;
+  padding: 20px 24px;
   margin-bottom: 16px;
 }
 
@@ -155,15 +252,15 @@
 }
 
 .rec-title {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--panel-text-primary);
   margin-bottom: 8px;
 }
 
 .rec-item {
-  margin-top: 10px;
-  font-size: 14px;
+  margin-top: 8px;
+  font-size: 13.5px;
   line-height: 1.5;
 }
 
@@ -171,7 +268,7 @@
   color: var(--panel-text-secondary);
 }
 
-/* Modo Aula Percentiles */
+/* Modo Aula */
 .cohort-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -181,91 +278,155 @@
 
 .cohort-stat-box {
   background: var(--panel-surface-subtle);
-  padding: 16px;
+  padding: 18px;
   border-radius: var(--panel-radius-md);
   text-align: center;
+  border: 1px solid var(--panel-border);
 }
 
 .cohort-stat-num {
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--panel-primary);
 }
 
 .cohort-stat-label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--panel-text-muted);
   margin-top: 4px;
-}
-
-/* Ajustes Form */
-.settings-group {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  max-width: 650px;
-}
-
-.settings-field {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--panel-border);
-}
-
-.settings-label h4 {
-  font-size: 15px;
   font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Formularios y Modal de Creación */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--panel-surface);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius-lg);
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: var(--panel-shadow-lg);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
   color: var(--panel-text-primary);
+  margin-bottom: 6px;
 }
 
-.settings-label p {
+.modal-desc {
   font-size: 13px;
-  color: var(--panel-text-muted);
+  color: var(--panel-text-secondary);
+  margin-bottom: 20px;
 }
 
-.settings-control select, .settings-control input[type="text"], .settings-control input[type="password"] {
-  padding: 8px 14px;
+.form-group {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--panel-text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
   border-radius: var(--panel-radius-sm);
   border: 1px solid var(--panel-border);
-  background: var(--panel-surface);
+  background: var(--panel-surface-subtle);
   color: var(--panel-text-primary);
   font-size: 14px;
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: var(--panel-primary);
+  box-shadow: 0 0 0 3px var(--panel-primary-light);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.btn-secondary {
+  background: var(--panel-surface-subtle);
+  border: 1px solid var(--panel-border);
+  color: var(--panel-text-secondary);
+  padding: 9px 16px;
+  border-radius: var(--panel-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--panel-primary);
+  border: 1px solid var(--panel-primary-hover);
+  color: #FFFFFF;
+  padding: 9px 18px;
+  border-radius: var(--panel-radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .btn-danger {
   background: var(--panel-danger);
   color: #FFF;
-  padding: 8px 16px;
+  border: none;
+  padding: 8px 14px;
   border-radius: var(--panel-radius-sm);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  cursor: pointer;
 }
 
 .btn-danger:hover {
   background: #B91C1C;
 }
 
-/* Legal y Acerca de */
-.legal-box {
-  font-size: 14px;
-  line-height: 1.7;
-  color: var(--panel-text-secondary);
+/* Ficha de Pase de Familia */
+.family-pass-card {
+  background: #FFFFFF;
+  color: #0F172A;
+  border: 2px dashed #3B82F6;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  margin: 16px 0;
 }
 
-.legal-box h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--panel-text-primary);
-  margin-top: 20px;
-  margin-bottom: 8px;
-}
-
-.legal-box p, .legal-box ul {
-  margin-bottom: 12px;
-}
-
-.legal-box ul {
-  padding-left: 20px;
+.pass-code-display {
+  font-family: monospace;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 0.25em;
+  color: #1D4ED8;
+  margin: 12px 0;
+  background: #EFF6FF;
+  padding: 10px;
+  border-radius: 8px;
+  display: inline-block;
 }

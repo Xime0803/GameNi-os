@@ -2,12 +2,24 @@ export type SkillArea = 'Números' | 'Escritura' | 'Vocabulario' | 'Lógica' | '
 
 export type AgeGroup = 'inicial' | 'avanzado'; // 3-6 años vs 7-10 años
 
+export type UserRole = 'admin' | 'parent';
+
+export interface AuthSession {
+  role: UserRole;
+  profileId?: string; // Si es 'parent', ID del estudiante vinculado al código
+  tokenTime?: number;
+}
+
 export interface UserProfile {
   id: string; // ej: "perfil-1"
   name: string; // ej: "Mateo" o "Estudiante 1"
+  accessCode: string; // Código único de 6 dígitos para el niño y sus padres (ej: "482910")
   avatar: string; // emoji de personaje
   ageGroup: AgeGroup;
+  grade?: string; // ej: "Inicial 4 años", "1° Primaria"
+  parentName?: string; // Nombre de contacto del apoderado
   createdAt: number;
+  lastActiveAt?: number;
 }
 
 export interface ProgressEntry {

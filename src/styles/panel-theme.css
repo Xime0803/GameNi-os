@@ -1,13 +1,19 @@
-/* Estilos Sobrios y Profesionales para el Panel de Padres y Maestros */
+/* ==========================================================================
+   Tema Ejecutivo y Profesional para el Panel de Familias y Docentes
+   ========================================================================== */
 
 :root {
+  /* Modo Claro */
   --panel-bg: #F8FAFC;
   --panel-surface: #FFFFFF;
   --panel-surface-subtle: #F1F5F9;
+  --panel-surface-hover: #E2E8F0;
   --panel-border: #E2E8F0;
+  --panel-border-subtle: #CBD5E1;
+
   --panel-text-primary: #0F172A;
   --panel-text-secondary: #475569;
-  --panel-text-muted: #94A3B8;
+  --panel-text-muted: #64748B;
 
   --panel-primary: #2563EB;
   --panel-primary-hover: #1D4ED8;
@@ -30,105 +36,138 @@
 }
 
 body.dark-mode {
-  --panel-bg: #0F172A;
-  --panel-surface: #1E293B;
-  --panel-surface-subtle: #334155;
-  --panel-border: #475569;
-  --panel-text-primary: #F8FAFC;
-  --panel-text-secondary: #CBD5E1;
-  --panel-text-muted: #64748B;
+  /* Modo Oscuro Ejecutivo (Deep Navy / Slate SaaS) */
+  --panel-bg: #0B0F19;
+  --panel-surface: #111827;
+  --panel-surface-subtle: #1F2937;
+  --panel-surface-hover: #374151;
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --panel-border-subtle: rgba(255, 255, 255, 0.12);
+
+  --panel-text-primary: #F9FAFB;
+  --panel-text-secondary: #9CA3AF;
+  --panel-text-muted: #6B7280;
 
   --panel-primary: #3B82F6;
   --panel-primary-hover: #60A5FA;
-  --panel-primary-light: #1E3A8A;
+  --panel-primary-light: rgba(59, 130, 246, 0.15);
 
-  --panel-success-light: #14532D;
-  --panel-warning-light: #78350F;
-  --panel-danger-light: #7F1D1D;
+  --panel-success: #22C55E;
+  --panel-success-light: rgba(34, 197, 94, 0.15);
+  --panel-warning: #F59E0B;
+  --panel-warning-light: rgba(245, 158, 11, 0.15);
+  --panel-danger: #EF4444;
+  --panel-danger-light: rgba(239, 68, 68, 0.15);
+
+  --panel-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --panel-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --panel-shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.5);
 }
 
 body.panel-body {
   background-color: var(--panel-bg);
   color: var(--panel-text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
   line-height: 1.5;
   overflow-y: auto;
   user-select: auto;
   -webkit-user-select: auto;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .panel-container {
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 24px 28px 60px;
 }
 
+/* Encabezado */
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
-  padding-bottom: 16px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--panel-border);
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .panel-title h1 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--panel-text-primary);
 }
 
 .panel-title p {
   color: var(--panel-text-secondary);
-  font-size: 14px;
+  font-size: 13.5px;
   margin-top: 4px;
 }
 
+/* Barra de navegación de pestañas (sin barra de desplazamiento tosca) */
 .panel-nav {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   background: var(--panel-surface-subtle);
   padding: 6px;
   border-radius: var(--panel-radius-md);
   margin-bottom: 28px;
   overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
+  border: 1px solid var(--panel-border);
+}
+
+.panel-nav::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .panel-nav-btn {
-  padding: 10px 18px;
-  font-size: 15px;
+  padding: 9px 16px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--panel-text-secondary);
   border-radius: var(--panel-radius-sm);
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   white-space: nowrap;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .panel-nav-btn:hover {
   color: var(--panel-text-primary);
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(128, 128, 128, 0.08);
 }
 
 .panel-nav-btn.active {
   background: var(--panel-surface);
   color: var(--panel-primary);
   box-shadow: var(--panel-shadow-sm);
+  font-weight: 700;
 }
 
+/* Tarjetas y Contenedores */
 .panel-card {
   background: var(--panel-surface);
   border: 1px solid var(--panel-border);
   border-radius: var(--panel-radius-lg);
-  padding: 24px;
+  padding: 24px 28px;
   box-shadow: var(--panel-shadow-sm);
   margin-bottom: 24px;
 }
 
+/* Tarjetas KPI Modernas */
 .metric-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
   margin-bottom: 24px;
 }
 
@@ -136,20 +175,59 @@ body.panel-body {
   background: var(--panel-surface);
   border: 1px solid var(--panel-border);
   border-radius: var(--panel-radius-md);
-  padding: 20px;
+  padding: 22px 24px;
+  box-shadow: var(--panel-shadow-sm);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--panel-primary);
+  opacity: 0.8;
+}
+
+.metric-card.accent-green::before { background: var(--panel-success); }
+.metric-card.accent-purple::before { background: #8B5CF6; }
+.metric-card.accent-amber::before { background: var(--panel-warning); }
+
+.metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.metric-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--panel-text-muted);
+  font-weight: 700;
+}
+
+.metric-icon-badge {
+  font-size: 18px;
 }
 
 .metric-value {
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--panel-text-primary);
-  margin-top: 6px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-.metric-label {
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--panel-text-muted);
-  font-weight: 600;
+.metric-subtext {
+  font-size: 12.5px;
+  color: var(--panel-text-secondary);
+  margin-top: 8px;
 }

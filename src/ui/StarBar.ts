@@ -45,8 +45,23 @@ export class StarBar {
     leftContainer.appendChild(this.backBtn.getElement());
 
     this.profileBadgeSpan = document.createElement('div');
-    this.profileBadgeSpan.className = 'timer-badge';
+    this.profileBadgeSpan.className = 'timer-badge pulse-gentle';
+    this.profileBadgeSpan.style.cursor = 'pointer';
+    this.profileBadgeSpan.title = 'Toca para cambiar de perfil con tu código de 6 dígitos';
     this.profileBadgeSpan.textContent = '👤 ...';
+    this.profileBadgeSpan.addEventListener('click', async () => {
+      const code = prompt('Ingresa tu código de 6 dígitos para cargar tu perfil:');
+      if (code) {
+        const found = await progressService.getProfileByCode(code.trim());
+        if (found) {
+          await progressService.setActiveProfile(found.id);
+          await this.refresh();
+          speechService.speak(`¡Bienvenido de nuevo, ${found.name}!`);
+        } else {
+          alert('Código no encontrado. Consulta con tu maestro o en el Panel de Adultos.');
+        }
+      }
+    });
     leftContainer.appendChild(this.profileBadgeSpan);
 
     // Centro: Contador de Estrellas Doradas

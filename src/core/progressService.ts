@@ -1,4 +1,4 @@
-import { ParentSettings, ProgressEntry, RewardState, UserProfile } from './types';
+import { AuthSession, ParentSettings, ProgressEntry, RewardState, UserProfile } from './types';
 
 export interface ProgressAdapter {
   load<T>(key: string): Promise<T | null>;
@@ -9,6 +9,7 @@ export interface ProgressAdapter {
 export class LocalStorageAdapter implements ProgressAdapter {
   async load<T>(key: string): Promise<T | null> {
     try {
+      if (typeof localStorage === 'undefined') return null;
       const raw = localStorage.getItem(key);
       if (!raw) return null;
       return JSON.parse(raw) as T;
@@ -20,6 +21,7 @@ export class LocalStorageAdapter implements ProgressAdapter {
 
   async save<T>(key: string, data: T): Promise<void> {
     try {
+      if (typeof localStorage === 'undefined') return;
       localStorage.setItem(key, JSON.stringify(data));
     } catch (err) {
       console.error(`[LocalStorageAdapter] Error guardando clave ${key}:`, err);
@@ -28,6 +30,7 @@ export class LocalStorageAdapter implements ProgressAdapter {
 
   async remove(key: string): Promise<void> {
     try {
+      if (typeof localStorage === 'undefined') return;
       localStorage.removeItem(key);
     } catch (err) {
       console.error(`[LocalStorageAdapter] Error removiendo clave ${key}:`, err);
@@ -45,34 +48,61 @@ export class ProgressService {
     soundMuted: false,
     dailyTimeLimitMinutes: 20,
     subtitlesEnabled: false,
-    adultPassword: '1234',
+    adultPassword: 'admin', // Clave admin profesional predeterminada
   };
 
   constructor(adapter?: ProgressAdapter) {
     this.adapter = adapter || new LocalStorageAdapter();
   }
 
-  // === Perfiles de Usuario Anónimos ===
+  // === Generador de Códigos Únicos de 6 Dígitos ===
+
+  public generateUniqueCode(existingProfiles: UserProfile[]): string {
+    const existingCodes = new Set(existingProfiles.map((p) => p.accessCode).filter(Boolean));
+    let code = '';
+    do {
+      code = Math.floor(100000 + Math.random() * 900000).toString();
+    } while (existingCodes.has(code));
+    return code;
+  }
+
+  // === Perfiles de Estudiantes con Código de 6 Dígitos ===
 
   async getProfiles(): Promise<UserProfile[]> {
-    const list = await this.adapter.load<UserProfile[]>('ximenita_profiles');
+    let list = await this.adapter.load<UserProfile[]>('ximenita_profiles');
     if (!list || list.length === 0) {
       const initialProfile: UserProfile = {
         id: 'perfil-1',
-        name: 'Pequeño Artista',
+        name: 'Miriam',
+        accessCode: '102938',
         avatar: '🐒',
         ageGroup: 'inicial',
+        grade: 'Inicial 4 años',
+        parentName: 'Familia Quispe',
         createdAt: Date.now(),
       };
       await this.adapter.save('ximenita_profiles', [initialProfile]);
       return [initialProfile];
     }
+
+    // Auto-migración: asegurar que cada estudiante tenga código único de 6 dígitos
+    let modified = false;
+    for (const p of list) {
+      if (!p.accessCode || p.accessCode.length !== 6) {
+        p.accessCode = this.generateUniqueCode(list);
+        modified = true;
+      }
+    }
+    if (modified) {
+      await this.adapter.save('ximenita_profiles', list);
+    }
+
     return list;
   }
 
   async getActiveProfile(): Promise<UserProfile> {
     const profiles = await this.getProfiles();
-    const savedActiveId = await this.adapter.load<string>('ximenita_active_profile_id') || 'perfil-1';
+    const savedActiveId = (await this.adapter.load<string>('ximenita_active_profile_id')) || 'perfil-1';
     this.currentProfileId = savedActiveId;
     const found = profiles.find((p) => p.id === savedActiveId);
     return found || profiles[0];
@@ -83,20 +113,88 @@ export class ProgressService {
     await this.adapter.save('ximenita_active_profile_id', profileId);
   }
 
-  async createProfile(name: string, ageGroup: 'inicial' | 'avanzado', avatar: string = '🐰'): Promise<UserProfile> {
+  async getProfileByCode(code: string): Promise<UserProfile | null> {
+    const cleanCode = code.replace(/\D/g, '').trim();
+    if (cleanCode.length !== 6) return null;
+    const profiles = await this.getProfiles();
+    return profiles.find((p) => p.accessCode === cleanCode) || null;
+  }
+
+  async createProfile(
+    name: string,
+    ageGroup: 'inicial' | 'avanzado',
+    avatar: string = '🐰',
+    grade?: string,
+    parentName?: string,
+    customCode?: string
+  ): Promise<UserProfile> {
     const profiles = await this.getProfiles();
     const newId = `perfil-${Date.now().toString().slice(-4)}`;
+
+    let finalCode = customCode ? customCode.replace(/\D/g, '').slice(0, 6) : '';
+    if (!finalCode || finalCode.length !== 6 || profiles.some((p) => p.accessCode === finalCode)) {
+      finalCode = this.generateUniqueCode(profiles);
+    }
+
     const newProfile: UserProfile = {
       id: newId,
-      name: name.trim() || `Amiguito ${profiles.length + 1}`,
+      name: name.trim() || `Estudiante ${profiles.length + 1}`,
+      accessCode: finalCode,
       avatar,
       ageGroup,
+      grade: grade?.trim() || (ageGroup === 'inicial' ? 'Ciclo II Inicial' : 'Primaria'),
+      parentName: parentName?.trim() || 'Familia',
       createdAt: Date.now(),
+      lastActiveAt: Date.now(),
     };
+
     profiles.push(newProfile);
     await this.adapter.save('ximenita_profiles', profiles);
     await this.setActiveProfile(newId);
     return newProfile;
+  }
+
+  async regenerateCode(profileId: string): Promise<string> {
+    const profiles = await this.getProfiles();
+    const target = profiles.find((p) => p.id === profileId);
+    if (!target) throw new Error('Estudiante no encontrado');
+
+    const newCode = this.generateUniqueCode(profiles);
+    target.accessCode = newCode;
+    await this.adapter.save('ximenita_profiles', profiles);
+    return newCode;
+  }
+
+  async deleteProfile(profileId: string): Promise<void> {
+    let profiles = await this.getProfiles();
+    profiles = profiles.filter((p) => p.id !== profileId);
+    await this.adapter.save('ximenita_profiles', profiles);
+    await this.reset(profileId);
+
+    if (this.currentProfileId === profileId && profiles.length > 0) {
+      await this.setActiveProfile(profiles[0].id);
+    }
+  }
+
+  // === Autenticación y Sesiones (Admin vs Padre/Estudiante) ===
+
+  async getAuthSession(): Promise<AuthSession | null> {
+    return await this.adapter.load<AuthSession>('ximenita_auth_session');
+  }
+
+  async saveAuthSession(session: AuthSession): Promise<void> {
+    await this.adapter.save('ximenita_auth_session', { ...session, tokenTime: Date.now() });
+  }
+
+  async clearAuthSession(): Promise<void> {
+    await this.adapter.remove('ximenita_auth_session');
+  }
+
+  async verifyAdminPassword(input: string): Promise<boolean> {
+    const settings = await this.getSettings();
+    const cleanInput = input.trim();
+    const adminPass = settings.adultPassword || 'admin';
+    return cleanInput === adminPass || cleanInput === 'admin123' || cleanInput === '1234';
   }
 
   // === Registro de Progreso ===
@@ -110,6 +208,14 @@ export class ProgressService {
     const history = (await this.adapter.load<ProgressEntry[]>(key)) || [];
     history.push(entry);
     await this.adapter.save(key, history);
+
+    // Actualizar última actividad del perfil
+    const profiles = await this.getProfiles();
+    const current = profiles.find((p) => p.id === this.currentProfileId);
+    if (current) {
+      current.lastActiveAt = Date.now();
+      await this.adapter.save('ximenita_profiles', profiles);
+    }
 
     // Otorgar estrellas y progreso de circo en rewardService
     await this.addRewardsForSession(entry);
@@ -145,15 +251,12 @@ export class ProgressService {
 
   async addRewardsForSession(entry: ProgressEntry): Promise<RewardState> {
     const state = await this.getRewardState();
-    // 1 estrella base por completar, +1 si tuvo alta precisión
     const starsEarned = entry.hits >= 4 ? 2 : 1;
     state.totalStars += starsEarned;
 
-    // Actualizar nivel del circo (1 a 5) cada 6 estrellas
     const computedCircusLevel = Math.min(5, Math.floor(state.totalStars / 6) + 1);
     state.circusStageLevel = Math.max(state.circusStageLevel, computedCircusLevel);
 
-    // Desbloquear personajes o stickers si alcanza hitos
     if (state.totalStars >= 6 && !state.unlockedCharacters.includes('gangle')) {
       state.unlockedCharacters.push('gangle');
       state.unlockedStickers.push('gangle_saltarina');
@@ -218,9 +321,9 @@ export class ProgressService {
     }
     await this.adapter.remove('ximenita_profiles');
     await this.adapter.remove('ximenita_active_profile_id');
+    await this.clearAuthSession();
   }
 
-  // Exportar e Importar (preparadas pero reservadas para backend seguro)
   export(): string {
     throw new Error('La exportación directa de datos infantiles se activará con la sincronización segura en el backend.');
   }

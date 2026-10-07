@@ -1,4 +1,5 @@
 import { audioService } from '../../core/audioService';
+import { speechService } from '../../core/speechService';
 import { DifficultyService } from '../../core/difficultyService';
 import { MiniGame, MiniGameConfig, MiniGameSessionResult } from '../../core/types';
 import { BigButton } from '../../ui/BigButton';
@@ -109,16 +110,29 @@ export class CuentaConPomniGame implements MiniGame {
       item.setAttribute('role', 'button');
       item.setAttribute('aria-label', `Plátano número ${i + 1}`);
 
-      item.addEventListener('click', () => {
+      const onCountBanana = (e: Event) => {
+        e.preventDefault();
         if (!this.itemsCountedByUser.has(i)) {
           this.itemsCountedByUser.add(i);
+          const currentCount = this.itemsCountedByUser.size;
           item.classList.add('counted');
           item.classList.remove('pulse-gentle');
-          audioService.playClick();
-          // Voz de Ximenita contando el número tocado
-          this.ximenita?.narrate(`${this.itemsCountedByUser.size}`);
+
+          // 1. Tono musical instantáneo marimba a 0ms de latencia
+          audioService.playNumberTone(currentCount);
+
+          // 2. Insignia visual con el número que flota sobre el plátano
+          const badge = document.createElement('span');
+          badge.className = 'count-number-badge';
+          badge.textContent = `${currentCount}`;
+          item.appendChild(badge);
+
+          // 3. Pronunciación fonética inmediata y veloz ("¡Uno!", "¡Dos!")
+          speechService.speakNumber(currentCount);
         }
-      });
+      };
+
+      item.addEventListener('pointerdown', onCountBanana);
       itemsBox.appendChild(item);
     }
 
@@ -132,7 +146,10 @@ export class CuentaConPomniGame implements MiniGame {
         text: opt.toString(),
         color: 'sun',
         ariaLabel: `Opción ${opt}`,
-        onClick: () => this.handleOptionChoice(opt),
+        onClick: () => {
+          audioService.playNumberTone(opt);
+          this.handleOptionChoice(opt);
+        },
       });
       optionsBox.appendChild(btn.getElement());
     });

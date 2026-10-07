@@ -14,14 +14,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   const settings = await progressService.getSettings();
   speechService.setSpeed(settings.voiceSpeed);
 
-  if (settings.musicEnabled) {
-    // Escuchar el primer toque del usuario para iniciar música (política del navegador)
-    const startAudioOnTouch = () => {
+  // Desbloqueo universal instantáneo de AudioContext y SpeechSynthesis al primer toque (política del navegador)
+  const unlockAudioPipeline = () => {
+    speechService.prewarm();
+    audioService.unlock(); // Despierta el AudioContext de Web Audio
+    if (settings.musicEnabled) {
       audioService.startBackgroundMusic();
-      window.removeEventListener('pointerdown', startAudioOnTouch);
-    };
-    window.addEventListener('pointerdown', startAudioOnTouch);
-  }
+    }
+    window.removeEventListener('pointerdown', unlockAudioPipeline);
+    window.removeEventListener('touchstart', unlockAudioPipeline);
+  };
+  window.addEventListener('pointerdown', unlockAudioPipeline, { passive: true });
+  window.addEventListener('touchstart', unlockAudioPipeline, { passive: true });
 
   // Iniciar SceneManager con el elenco completo de los 10 mini-juegos
   const sceneManager = new SceneManager(root, ALL_GAMES);

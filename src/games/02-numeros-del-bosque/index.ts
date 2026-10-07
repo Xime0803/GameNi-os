@@ -1,4 +1,6 @@
 import { audioService } from '../../core/audioService';
+import { speechService } from '../../core/speechService';
+import { numberToSpanishWord } from '../../core/numberWords';
 import { DifficultyService } from '../../core/difficultyService';
 import { MiniGame, MiniGameConfig, MiniGameSessionResult } from '../../core/types';
 import { XimenitaComponent } from '../../ui/Ximenita';
@@ -121,21 +123,30 @@ export class NumerosDelBosqueGame implements MiniGame {
         <span class="tree-icon">🌲</span>
         <span class="tree-number">${num}</span>
       `;
-      card.addEventListener('click', () => this.handlePick(num));
+
+      card.addEventListener('pointerdown', (e: Event) => {
+        e.preventDefault();
+        this.handlePick(num, card);
+      });
       treesGrid.appendChild(card);
     });
 
-    setTimeout(() => this.speakTarget(), 300);
+    setTimeout(() => this.speakTarget(), 250);
   }
 
   private speakTarget(): void {
-    this.ximenita?.narrate(`¡Busca el número ${this.targetNumber}!`);
+    const word = numberToSpanishWord(this.targetNumber);
+    this.ximenita?.narrate(`¡Busca el número ${word}!`);
   }
 
-  private handlePick(picked: number): void {
+  private handlePick(picked: number, cardEl?: HTMLElement): void {
+    // 1. Tono melódico instantáneo a 0ms de latencia
+    audioService.playNumberTone(picked);
+
     if (picked === this.targetNumber) {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
+      cardEl?.classList.add('card-correct');
       audioService.playSuccess();
       this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
 
@@ -147,7 +158,13 @@ export class NumerosDelBosqueGame implements MiniGame {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
+      cardEl?.classList.add('card-shake');
+      setTimeout(() => cardEl?.classList.remove('card-shake'), 600);
+
+      // Pronuncia el número tocado y anima a buscar el correcto
+      speechService.speakNumber(picked, 'Tocaste el', () => {
+        this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
+      });
     }
   }
 

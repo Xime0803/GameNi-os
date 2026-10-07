@@ -1,4 +1,5 @@
 import { audioService } from '../../core/audioService';
+import { numberToSpanishWord } from '../../core/numberWords';
 import { DifficultyService } from '../../core/difficultyService';
 import { getNumberGuide } from '../../core/numberPaths';
 import { TracingService } from '../../core/tracingService';
@@ -144,7 +145,8 @@ export class TrazaLosNumerosGame implements MiniGame {
     const fillBar = this.container.querySelector('#coverage-bar-fill') as HTMLElement;
     if (fillBar) fillBar.style.width = '0%';
 
-    this.ximenita?.narrate(`¡Tracemos el número ${this.targetNumber}!`);
+    const word = numberToSpanishWord(this.targetNumber);
+    this.ximenita?.narrate(`¡Tracemos el número ${word}!`);
   }
 
   private evaluateStroke(): void {

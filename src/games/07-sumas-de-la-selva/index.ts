@@ -1,4 +1,5 @@
 import { audioService } from '../../core/audioService';
+import { numberToSpanishWord } from '../../core/numberWords';
 import { DifficultyService } from '../../core/difficultyService';
 import { MiniGame, MiniGameConfig, MiniGameSessionResult } from '../../core/types';
 import { BigButton } from '../../ui/BigButton';
@@ -126,12 +127,17 @@ export class SumasDeLaSelvaGame implements MiniGame {
         text: num.toString(),
         color: 'sun',
         ariaLabel: `Opción suma ${num}`,
-        onClick: () => this.handlePick(num),
+        onClick: () => {
+          audioService.playNumberTone(num);
+          this.handlePick(num);
+        },
       });
       row.appendChild(btn.getElement());
     });
 
-    this.ximenita?.narrate(`¿Cuánto es ${this.opA} más ${this.opB}?`);
+    const wordA = numberToSpanishWord(this.opA);
+    const wordB = numberToSpanishWord(this.opB);
+    this.ximenita?.narrate(`¿Cuánto es ${wordA} más ${wordB}?`);
   }
 
   private handlePick(chosen: number): void {

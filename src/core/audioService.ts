@@ -33,6 +33,14 @@ export class AudioService {
     return this.isMuted;
   }
 
+  // Despierta el contexto de audio en el primer gesto del usuario
+  public unlock(): void {
+    const ctx = this.getContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+  }
+
   // Clic suave al tocar cualquier botón
   public playClick(): void {
     if (this.isMuted) return;
@@ -54,6 +62,52 @@ export class AudioService {
 
     osc.start();
     osc.stop(ctx.currentTime + 0.08);
+  }
+
+  // Tono melódico pedagógico de marimba con respuesta táctil instantánea (0ms de latencia)
+  public playNumberTone(count: number): void {
+    if (this.isMuted) return;
+    const ctx = this.getContext();
+    if (!ctx) return;
+
+    // Escala diatónica en Do mayor (C4 a C6)
+    const scale = [
+      261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, // Do4 - Si4
+      523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, // Do5 - Si5
+      1046.50 // Do6
+    ];
+
+    const idx = Math.max(0, (count - 1) % scale.length);
+    const freq = scale[idx];
+    const now = ctx.currentTime;
+
+    // Onda fundamental (marimba cálida)
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, now);
+
+    // Segundo armónico para brillo percusivo
+    const osc2 = ctx.createOscillator();
+    const gain2 = ctx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(freq * 2, now);
+
+    gain.gain.setValueAtTime(0.25, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+
+    gain2.gain.setValueAtTime(0.08, now);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+    osc.connect(gain);
+    osc2.connect(gain2);
+    gain.connect(ctx.destination);
+    gain2.connect(ctx.destination);
+
+    osc.start(now);
+    osc2.start(now);
+    osc.stop(now + 0.32);
+    osc2.stop(now + 0.32);
   }
 
   // Acorde mayor de éxito (Do - Mi - Sol - Do)

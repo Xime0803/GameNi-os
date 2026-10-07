@@ -1,7 +1,6 @@
 import { audioService } from '../core/audioService';
 import { progressService } from '../core/progressService';
 import { speechService } from '../core/speechService';
-import { BigButton } from './BigButton';
 
 export interface StarBarOptions {
   onBackToMap?: () => void;
@@ -10,10 +9,11 @@ export interface StarBarOptions {
 
 export class StarBar {
   private element: HTMLElement;
-  private starCountSpan: HTMLElement;
+  private backBtn: HTMLButtonElement;
+  private gameBadge: HTMLElement;
   private profileBadgeSpan: HTMLElement;
-  private muteBtn: BigButton;
-  private backBtn: BigButton | null = null;
+  private starCountSpan: HTMLElement;
+  private muteBtn: HTMLButtonElement;
   private onBackToMapCallback?: () => void;
 
   constructor(options: StarBarOptions = {}) {
@@ -21,33 +21,53 @@ export class StarBar {
     this.element = document.createElement('header');
     this.element.className = 'top-bar';
 
-    // Izquierda: Botón de Regresar al Menú Principal / Circo y Perfil activo
+    // 1. Lado Izquierdo: Botón "Sala Principal" + Insignia del Juego Activo
     const leftContainer = document.createElement('div');
     leftContainer.className = 'top-bar-left';
 
-    this.backBtn = new BigButton({
-      icon: '⬅️',
-      text: 'Regresar al Panel Principal',
-      color: 'sky',
-      ariaLabel: 'Volver al panel principal del circo',
-      className: 'btn-back-to-menu',
-      onClick: () => {
-        audioService.playClick();
-        if (this.onBackToMapCallback) {
-          this.onBackToMapCallback();
-        }
-      },
+    this.backBtn = document.createElement('button');
+    this.backBtn.className = 'top-nav-back';
+    this.backBtn.id = 'btn-back-to-hall';
+    this.backBtn.setAttribute('aria-label', 'Regresar a la Sala Principal');
+    this.backBtn.innerHTML = `
+      <span class="nav-icon">⬅️</span>
+      <span class="nav-text">Sala Principal</span>
+    `;
+    this.backBtn.style.display = options.showMapButton ? 'inline-flex' : 'none';
+    this.backBtn.addEventListener('click', () => {
+      audioService.playClick();
+      if (this.onBackToMapCallback) {
+        this.onBackToMapCallback();
+      }
     });
+    leftContainer.appendChild(this.backBtn);
 
-    // Oculto por defecto si estamos en el mapa, visible si estamos en un juego
-    if (!options.showMapButton) {
-      this.backBtn.getElement().style.display = 'none';
-    }
-    leftContainer.appendChild(this.backBtn.getElement());
+    this.gameBadge = document.createElement('div');
+    this.gameBadge.className = 'top-nav-game-badge';
+    this.gameBadge.id = 'top-nav-game-badge';
+    this.gameBadge.style.display = 'none';
+    leftContainer.appendChild(this.gameBadge);
 
-    this.profileBadgeSpan = document.createElement('div');
-    this.profileBadgeSpan.className = 'timer-badge pulse-gentle';
-    this.profileBadgeSpan.style.cursor = 'pointer';
+    // 2. Centro: Contador de Estrellas Doradas
+    const centerContainer = document.createElement('div');
+    centerContainer.className = 'top-bar-center';
+
+    const starsPill = document.createElement('div');
+    starsPill.className = 'top-nav-stars-badge';
+    starsPill.setAttribute('aria-label', 'Estrellas acumuladas');
+    starsPill.innerHTML = `
+      <span>⭐</span>
+      <span id="star-count-num">0</span>
+    `;
+    this.starCountSpan = starsPill.querySelector('#star-count-num') as HTMLElement;
+    centerContainer.appendChild(starsPill);
+
+    // 3. Lado Derecho: Perfil del Niño + Silencio + Panel de Adultos
+    const rightContainer = document.createElement('div');
+    rightContainer.className = 'top-bar-right';
+
+    this.profileBadgeSpan = document.createElement('button');
+    this.profileBadgeSpan.className = 'top-nav-profile-badge';
     this.profileBadgeSpan.title = 'Toca para cambiar de perfil con tu código de 6 dígitos';
     this.profileBadgeSpan.textContent = '👤 ...';
     this.profileBadgeSpan.addEventListener('click', async () => {
@@ -59,44 +79,28 @@ export class StarBar {
           await this.refresh();
           speechService.speak(`¡Bienvenido de nuevo, ${found.name}!`);
         } else {
-          alert('Código no encontrado. Consulta con tu maestro o en el Panel de Adultos.');
+          alert('Código no encontrado. Consulta con tu docente o en el Panel de Adultos.');
         }
       }
     });
-    leftContainer.appendChild(this.profileBadgeSpan);
+    rightContainer.appendChild(this.profileBadgeSpan);
 
-    // Centro: Contador de Estrellas Doradas
-    const centerContainer = document.createElement('div');
-    centerContainer.className = 'star-counter';
-    centerContainer.setAttribute('aria-label', 'Estrellas acumuladas');
-    centerContainer.innerHTML = '⭐ ';
-    this.starCountSpan = document.createElement('span');
-    this.starCountSpan.textContent = '0';
-    centerContainer.appendChild(this.starCountSpan);
+    this.muteBtn = document.createElement('button');
+    this.muteBtn.className = 'top-nav-mute-btn';
+    this.muteBtn.setAttribute('aria-label', 'Silenciar o activar sonidos');
+    this.muteBtn.innerHTML = '<span class="mute-icon">🔊</span>';
+    this.muteBtn.addEventListener('click', () => this.toggleSound());
+    rightContainer.appendChild(this.muteBtn);
 
-    // Derecha: Mute + Acceso Adultos
-    const rightContainer = document.createElement('div');
-    rightContainer.className = 'top-bar-right';
-
-    this.muteBtn = new BigButton({
-      icon: '🔊',
-      color: 'sun',
-      ariaLabel: 'Silenciar o activar sonidos',
-      onClick: () => this.toggleSound(),
-    });
-    rightContainer.appendChild(this.muteBtn.getElement());
-
-    // Botón para padres y maestros
-    const adultPanelBtn = new BigButton({
-      icon: '🔒',
-      text: 'Adultos',
-      color: 'lavender',
-      ariaLabel: 'Abrir panel de padres y maestros',
-      onClick: () => {
-        window.location.href = './panel.html';
-      },
-    });
-    rightContainer.appendChild(adultPanelBtn.getElement());
+    const adultPanelBtn = document.createElement('a');
+    adultPanelBtn.href = './panel.html';
+    adultPanelBtn.className = 'top-nav-adult-btn';
+    adultPanelBtn.setAttribute('aria-label', 'Acceder al panel de adultos y gestión');
+    adultPanelBtn.innerHTML = `
+      <span>🔒</span>
+      <span>Adultos</span>
+    `;
+    rightContainer.appendChild(adultPanelBtn);
 
     this.element.appendChild(leftContainer);
     this.element.appendChild(centerContainer);
@@ -109,20 +113,35 @@ export class StarBar {
     return this.element;
   }
 
-  public setBackToMapVisible(visible: boolean, label: string = 'Regresar al Panel Principal'): void {
+  public setBackToMapVisible(visible: boolean, label: string = 'Sala Principal'): void {
     if (this.backBtn) {
-      this.backBtn.getElement().style.display = visible ? 'inline-flex' : 'none';
-      const textEl = this.backBtn.getElement().querySelector('.btn-text');
-      if (textEl) textEl.textContent = label;
+      this.backBtn.style.display = visible ? 'inline-flex' : 'none';
+      const textEl = this.backBtn.querySelector('.nav-text');
+      if (textEl) textEl.textContent = label.replace(/^⬅️\s*/, '');
+    }
+  }
+
+  public setActiveGame(gameTitle: string | null): void {
+    if (this.gameBadge) {
+      if (gameTitle) {
+        this.gameBadge.textContent = `🎪 ${gameTitle}`;
+        this.gameBadge.style.display = 'inline-flex';
+      } else {
+        this.gameBadge.style.display = 'none';
+      }
     }
   }
 
   public async refresh(): Promise<void> {
     const rewards = await progressService.getRewardState();
-    this.starCountSpan.textContent = rewards.totalStars.toString();
+    if (this.starCountSpan) {
+      this.starCountSpan.textContent = rewards.totalStars.toString();
+    }
 
     const profile = await progressService.getActiveProfile();
-    this.profileBadgeSpan.textContent = `${profile.avatar} ${profile.name}`;
+    if (this.profileBadgeSpan) {
+      this.profileBadgeSpan.textContent = `${profile.avatar} ${profile.name}`;
+    }
   }
 
   private toggleSound(): void {
@@ -130,6 +149,9 @@ export class StarBar {
     const newMuted = !currentMuted;
     audioService.setMuted(newMuted);
     speechService.setMuted(newMuted);
-    this.muteBtn.getElement().querySelector('.btn-icon')!.textContent = newMuted ? '🔇' : '🔊';
+    const icon = this.muteBtn.querySelector('.mute-icon');
+    if (icon) {
+      icon.textContent = newMuted ? '🔇' : '🔊';
+    }
   }
 }

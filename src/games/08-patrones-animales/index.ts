@@ -137,17 +137,17 @@ export class PatronesAnimalesGame implements MiniGame {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
       audioService.playSuccess();
-      this.ximenita?.celebrate('¡Perfecto! ¡Ese es el que continuaba!');
+      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
 
       if (levelChanged) {
         setTimeout(() => this.ximenita?.narrate(`¡Avanzaste al nivel ${newLevel}!`), 1200);
       }
-      setTimeout(() => this.startRound(), 1500);
+      setTimeout(() => this.startRound(), 1800);
     } else {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint('Casi. Fíjate en el ritmo de los personajes anteriores.');
+      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
     }
   }
 

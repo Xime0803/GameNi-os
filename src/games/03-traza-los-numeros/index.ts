@@ -155,7 +155,7 @@ export class TrazaLosNumerosGame implements MiniGame {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint('¡Uy! Recuerda seguir la flecha hacia adelante desde el punto rojo.');
+      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
       return;
     }
 
@@ -163,17 +163,17 @@ export class TrazaLosNumerosGame implements MiniGame {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
       audioService.playSuccess();
-      this.ximenita?.celebrate('¡Qué hermoso trazo! ¡Lo hiciste excelente!');
+      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
 
       if (levelChanged) {
         setTimeout(() => this.ximenita?.narrate(`¡Avanzaste al nivel ${newLevel}!`), 1200);
       }
-      setTimeout(() => this.startRound(), 1500);
+      setTimeout(() => this.startRound(), 1800);
     } else {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint(result.message || 'Casi, cubre un poquito más de la línea punteada.');
+      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
     }
   }
 

@@ -49,23 +49,39 @@ export class XimenitaComponent {
     });
   }
 
-  public celebrate(text: string = '¡Lo lograste!'): void {
+  public celebrate(customText?: string, onFinish?: () => void): void {
+    const defaultPhrases = [
+      '¡Excelente, lo hiciste muy bien!',
+      '¡Muy bien, lo lograste!',
+      '¡Excelente! ¡Qué bien lo hiciste!',
+    ];
+    const text = customText || defaultPhrases[Math.floor(Math.random() * defaultPhrases.length)];
+
     this.setState('celebrating');
     this.showSpeechBubble(text);
-    setTimeout(() => {
-      if (this.state === 'celebrating') {
-        this.setState('idle');
-        this.hideSpeechBubble();
-      }
-    }, 2800);
-  }
 
-  public giveHint(text: string): void {
-    this.setState('hint');
-    this.showSpeechBubble(text);
     speechService.speak(text, () => {
       this.setState('idle');
       this.hideSpeechBubble();
+      if (onFinish) onFinish();
+    });
+  }
+
+  public giveHint(customText?: string, onFinish?: () => void): void {
+    const defaultPhrases = [
+      '¡Vamos, tú puedes! ¡Inténtalo de nuevo!',
+      'Casi, inténtalo otra vez, ¡vamos juntos!',
+      '¡Vamos, tú puedes! Intenta otra vez.',
+    ];
+    const text = customText || defaultPhrases[Math.floor(Math.random() * defaultPhrases.length)];
+
+    this.setState('hint');
+    this.showSpeechBubble(text);
+
+    speechService.speak(text, () => {
+      this.setState('idle');
+      this.hideSpeechBubble();
+      if (onFinish) onFinish();
     });
   }
 

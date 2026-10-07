@@ -70,7 +70,7 @@ export class PanelApp {
             </button>
 
             <!-- Enlace al Juego -->
-            <a href="./index.html" class="gate-btn gate-btn-primary" style="text-decoration: none;">🎪 Volver al Circo</a>
+            <a href="./index.html" class="gate-btn gate-btn-primary" style="text-decoration: none;">🎪 Volver al Menú Principal</a>
           </div>
         </header>
 

@@ -132,17 +132,17 @@ export class VocalesAnimalesGame implements MiniGame {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
       audioService.playSuccess();
-      this.ximenita?.celebrate(`¡Excelente! ¡${this.currentItem.name} empieza con la vocal ${vowel}!`);
+      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
 
       if (levelChanged) {
         setTimeout(() => this.ximenita?.narrate(`¡Avanzaste al nivel ${newLevel}!`), 1200);
       }
-      setTimeout(() => this.startRound(), 1500);
+      setTimeout(() => this.startRound(), 1800);
     } else {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint(`Casi. Escucha el sonido inicial: ¡${this.currentItem.name}!`);
+      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
     }
   }
 

@@ -13,28 +13,39 @@ export class StarBar {
   private starCountSpan: HTMLElement;
   private profileBadgeSpan: HTMLElement;
   private muteBtn: BigButton;
+  private backBtn: BigButton | null = null;
+  private onBackToMapCallback?: () => void;
 
   constructor(options: StarBarOptions = {}) {
+    this.onBackToMapCallback = options.onBackToMap;
     this.element = document.createElement('header');
     this.element.className = 'top-bar';
 
-    // Izquierda: Volver al Mapa (si aplica) y Perfil activo
+    // Izquierda: Botón de Regresar al Menú Principal / Circo y Perfil activo
     const leftContainer = document.createElement('div');
     leftContainer.className = 'top-bar-left';
 
-    if (options.showMapButton !== false && options.onBackToMap) {
-      const backBtn = new BigButton({
-        icon: '🎪',
-        text: 'Circo',
-        color: 'sky',
-        ariaLabel: 'Volver a la carpa del circo',
-        onClick: () => options.onBackToMap!(),
-      });
-      leftContainer.appendChild(backBtn.getElement());
+    this.backBtn = new BigButton({
+      icon: '🎪',
+      text: 'Menú Principal',
+      color: 'sky',
+      ariaLabel: 'Volver al menú principal del circo',
+      className: 'btn-back-to-menu pulse-gentle',
+      onClick: () => {
+        if (this.onBackToMapCallback) {
+          this.onBackToMapCallback();
+        }
+      },
+    });
+
+    // Oculto por defecto si estamos en el mapa, visible si estamos en un juego
+    if (!options.showMapButton) {
+      this.backBtn.getElement().style.display = 'none';
     }
+    leftContainer.appendChild(this.backBtn.getElement());
 
     this.profileBadgeSpan = document.createElement('div');
-    this.profileBadgeSpan.className = 'timer-badge pulse-gentle';
+    this.profileBadgeSpan.className = 'timer-badge';
     this.profileBadgeSpan.textContent = '👤 ...';
     leftContainer.appendChild(this.profileBadgeSpan);
 
@@ -80,6 +91,14 @@ export class StarBar {
 
   public getElement(): HTMLElement {
     return this.element;
+  }
+
+  public setBackToMapVisible(visible: boolean, label: string = 'Menú Principal'): void {
+    if (this.backBtn) {
+      this.backBtn.getElement().style.display = visible ? 'inline-flex' : 'none';
+      const textEl = this.backBtn.getElement().querySelector('.btn-text');
+      if (textEl) textEl.textContent = label;
+    }
   }
 
   public async refresh(): Promise<void> {

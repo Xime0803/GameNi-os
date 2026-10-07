@@ -32,29 +32,36 @@ export class SpeechService {
     }
   }
 
-  private initVoices(): void {
+  public initVoices(): void {
     if (!this.synth) return;
 
     const findBestVoice = () => {
       const voices = this.synth?.getVoices() || [];
-      // Buscar es-PE primero, luego es-MX, luego es-419 o cualquier es
+      if (voices.length === 0) return null;
+
+      // 1. es-PE específico
       const esPE = voices.find((v) => v.lang.toLowerCase() === 'es-pe');
       if (esPE) return esPE;
 
-      const esMX = voices.find((v) => v.lang.toLowerCase() === 'es-mx');
+      // 2. es-MX o es-419
+      const esMX = voices.find((v) => v.lang.toLowerCase() === 'es-mx' || v.lang.toLowerCase() === 'es-419');
       if (esMX) return esMX;
 
-      const esAnyFemale = voices.find(
+      // 3. Voz femenina en español
+      const esFemale = voices.find(
         (v) =>
           v.lang.toLowerCase().startsWith('es') &&
           (v.name.toLowerCase().includes('female') ||
            v.name.toLowerCase().includes('sabina') ||
            v.name.toLowerCase().includes('luciana') ||
            v.name.toLowerCase().includes('paulina') ||
-           v.name.toLowerCase().includes('monica'))
+           v.name.toLowerCase().includes('monica') ||
+           v.name.toLowerCase().includes('helena') ||
+           v.name.toLowerCase().includes('zira'))
       );
-      if (esAnyFemale) return esAnyFemale;
+      if (esFemale) return esFemale;
 
+      // 4. Cualquier voz en español
       const esAny = voices.find((v) => v.lang.toLowerCase().startsWith('es'));
       return esAny || voices[0] || null;
     };
@@ -113,27 +120,42 @@ export class SpeechService {
     try {
       this.synth.cancel(); // Cancelar locución previa para evitar acumulación
 
+      if (!this.currentVoice) {
+        this.initVoices();
+      }
+
+      if (this.synth.paused) {
+        this.synth.resume();
+      }
+
       const utterance = new SpeechSynthesisUtterance(text);
       if (this.currentVoice) {
         utterance.voice = this.currentVoice;
       }
       utterance.lang = this.currentVoice?.lang || 'es-PE';
       utterance.rate = this.speedRates[this.currentSpeed];
-      utterance.pitch = 1.15; // Tono ligeramente más agudo e infantil / cálido
+      utterance.pitch = 1.15; // Tono cálido, amigable e infantil
+
+      let ended = false;
+      const finish = () => {
+        if (ended) return;
+        ended = true;
+        this.onSpeechEndCallbacks.forEach((cb) => cb());
+        if (onEnd) onEnd();
+      };
 
       utterance.onstart = () => {
         this.onSpeechStartCallbacks.forEach((cb) => cb());
       };
 
-      utterance.onend = () => {
-        this.onSpeechEndCallbacks.forEach((cb) => cb());
-        if (onEnd) onEnd();
-      };
+      utterance.onend = finish;
+      utterance.onerror = finish;
 
-      utterance.onerror = () => {
-        this.onSpeechEndCallbacks.forEach((cb) => cb());
-        if (onEnd) onEnd();
-      };
+      // Respaldo por si el motor TTS del navegador no dispara onend
+      const fallbackMs = Math.max(3000, (text.length / 8) * 1000);
+      setTimeout(() => {
+        if (!ended) finish();
+      }, fallbackMs);
 
       this.synth.speak(utterance);
     } catch (err) {

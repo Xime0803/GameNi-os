@@ -147,11 +147,11 @@ export class MemoriaAnimalGame implements MiniGame {
         this.matchedIndices.add(second);
         this.flippedIndices = [];
         audioService.playSuccess();
-        this.ximenita?.celebrate(`¡Pareja de ${this.deck[first].name}!`);
+        this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
 
         if (this.matchedIndices.size === this.deck.length) {
           // Ronda terminada
-          setTimeout(() => this.startRound(), 1400);
+          setTimeout(() => this.startRound(), 1800);
         } else {
           this.renderCards();
         }
@@ -159,10 +159,11 @@ export class MemoriaAnimalGame implements MiniGame {
         // No coinciden
         this.misses++;
         audioService.playGentleHint();
+        this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
         setTimeout(() => {
           this.flippedIndices = [];
           this.renderCards();
-        }, 900);
+        }, 1200);
       }
     }
   }

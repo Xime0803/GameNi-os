@@ -154,7 +154,7 @@ export class CuentaConPomniGame implements MiniGame {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
       audioService.playSuccess();
-      this.ximenita?.celebrate('¡Muy bien! ¡Excelente conteo!');
+      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
 
       if (levelChanged) {
         setTimeout(() => {
@@ -162,13 +162,13 @@ export class CuentaConPomniGame implements MiniGame {
         }, 1200);
       }
 
-      setTimeout(() => this.startRound(), 1500);
+      setTimeout(() => this.startRound(), 1800);
     } else {
       // Error amigable: pista y reintentar
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint('Casi, cuenta tocando cada plátano uno por uno. ¡Vamos juntos!');
+      this.ximenita?.giveHint('¡Vamos, tú puedes! ¡Inténtalo de nuevo!');
     }
   }
 

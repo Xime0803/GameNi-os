@@ -41,6 +41,7 @@ export class SceneManager {
       this.currentGame.unmount();
       this.currentGame = null;
     }
+    this.starBar.setBackToMapVisible(false);
     this.starBar.refresh();
     this.mapScreen.render(this.contentContainer);
   }
@@ -59,14 +60,31 @@ export class SceneManager {
     this.currentGame = game;
     this.contentContainer.innerHTML = '';
 
-    // Barra con botón de volver al mapa
+    // Mostrar botón de volver al menú en la barra superior
+    this.starBar.setBackToMapVisible(true, '🎪 Menú Principal');
+
     const gameWrapper = document.createElement('div');
     gameWrapper.className = 'game-scene-wrapper';
     gameWrapper.style.width = '100%';
     gameWrapper.style.height = '100%';
     gameWrapper.style.position = 'relative';
 
+    // Barra de retorno directo flotante en la esquina
+    const floatingReturnBar = document.createElement('div');
+    floatingReturnBar.className = 'floating-back-bar';
+    floatingReturnBar.innerHTML = `
+      <button class="btn-return-circus" aria-label="Volver al menú principal del circo">
+        <span>🎪</span> <span>Volver al Menú Principal</span>
+      </button>
+    `;
+    floatingReturnBar.querySelector('.btn-return-circus')?.addEventListener('click', () => {
+      audioService.playClick();
+      this.showMap();
+    });
+    gameWrapper.appendChild(floatingReturnBar);
+
     this.contentContainer.appendChild(gameWrapper);
+    this.injectSceneStylesOnce();
 
     await game.mount(gameWrapper, (result) => this.handleGameComplete(result));
   }
@@ -102,7 +120,7 @@ export class SceneManager {
           <div class="stat-pill">🏆 Nivel: <strong>${result.finalLevel}</strong></div>
         </div>
         <button class="btn-big btn-sun btn-continue pulse-gentle">
-          🎪 ¡Volver al Circo!
+          🎪 ¡Volver al Menú Principal!
         </button>
       </div>
     `;
@@ -115,7 +133,7 @@ export class SceneManager {
       ximenitaSlot.insertBefore(ximenita.getElement(), ximenitaSlot.querySelector('.btn-continue'));
     }
 
-    ximenita.celebrate('¡Excelente trabajo! ¡Ganaste una estrella dorada!');
+    ximenita.celebrate('¡Excelente, lo hiciste muy bien!');
 
     modal.querySelector('.btn-continue')?.addEventListener('click', () => {
       audioService.playClick();
@@ -124,6 +142,47 @@ export class SceneManager {
     });
 
     this.injectModalStylesOnce();
+  }
+
+  private injectSceneStylesOnce(): void {
+    if (document.getElementById('scene-manager-styles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'scene-manager-styles';
+    style.textContent = `
+      .floating-back-bar {
+        position: absolute;
+        top: 14px;
+        left: 20px;
+        z-index: 80;
+      }
+
+      .btn-return-circus {
+        background: #FFFFFFEE;
+        border: 3px solid var(--color-sky);
+        padding: 8px 18px;
+        border-radius: var(--radius-full);
+        font-size: 17px;
+        font-weight: 700;
+        color: #0369A1;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: var(--shadow-sm);
+        transition: transform var(--transition-fast), background 0.2s;
+      }
+
+      .btn-return-circus:hover {
+        transform: scale(1.06);
+        background: #EFF6FF;
+      }
+
+      .btn-return-circus:active {
+        transform: scale(0.96);
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   private injectModalStylesOnce(): void {

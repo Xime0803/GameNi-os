@@ -64,7 +64,7 @@ export class ParentalGate {
         <div id="gate-error-msg" class="gate-error" style="display: none;"></div>
 
         <div class="gate-actions">
-          <a href="./index.html" class="gate-btn gate-btn-secondary">Volver al Circo</a>
+          <a href="./index.html" class="gate-btn gate-btn-secondary">🎪 Volver al Menú Principal</a>
           <button id="gate-submit-btn" class="gate-btn gate-btn-primary">Verificar e Ingresar</button>
         </div>
       </div>

@@ -1,36 +1,31 @@
-// Service Worker para funcionamiento offline de El Mundo de Ximenita
-const CACHE_NAME = 'ximenita-v1';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/panel.html',
-  '/manifest.json'
-];
+// Service Worker de El Mundo de Ximenita
+// Estrategia Network-First para garantizar actualizaciones en tiempo real
+const CACHE_NAME = 'ximenita-v2';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
+  // Limpiar cachés anteriores para evitar servir versiones desactualizadas
   event.waitUntil(
     caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
+      return Promise.all(keys.map((key) => caches.delete(key)));
     })
   );
   self.clients.claim();
 });
 
+// Network-First: Siempre intenta obtener la versión más reciente de la red
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).catch(() => caches.match('/index.html'));
-    })
+    fetch(event.request)
+      .then((networkResponse) => {
+        return networkResponse;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });

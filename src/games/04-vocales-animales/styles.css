@@ -47,3 +47,40 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+
+@media (max-width: 680px) {
+  .vocales-game {
+    padding: 8px 10px 16px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .animal-display-card {
+    padding: 14px 20px;
+    border-width: 3px;
+    gap: 6px;
+  }
+
+  .animal-display-emoji {
+    font-size: 50px;
+  }
+
+  .animal-display-name {
+    font-size: 22px;
+  }
+
+  .vowel-buttons-row {
+    gap: 6px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .vowel-buttons-row .btn-big {
+    min-width: 50px;
+    min-height: 50px;
+    padding: 8px 12px;
+    font-size: 22px;
+    flex: 1;
+  }
+}
+

@@ -253,4 +253,132 @@
   transform: translateY(1px);
 }
 
+/* ==========================================================================
+   ADAPTACIÓN UNIVERSAL PARA CELULARES Y SMARTPHONES (Pantallas < 680px)
+   ========================================================================== */
+
+@media (max-width: 680px) {
+  :root {
+    --touch-target-min: 56px;
+    --touch-spacing: 8px;
+  }
+
+  .btn-big {
+    min-width: 56px;
+    min-height: 52px;
+    padding: 10px 18px;
+    font-size: 19px;
+    border-radius: var(--radius-md);
+    gap: 8px;
+  }
+
+  /* Barra Superior en Celulares: compacta, todo en 1 sola fila sin desbordar */
+  .top-bar {
+    padding: 6px 10px;
+    min-height: 50px;
+  }
+
+  .top-bar-left,
+  .top-bar-right {
+    gap: 6px;
+  }
+
+  .top-nav-back {
+    padding: 6px 12px;
+    font-size: 13px;
+    gap: 4px;
+  }
+
+  .top-nav-back .nav-text {
+    font-size: 12px;
+  }
+
+  .top-nav-game-badge {
+    display: none !important;
+  }
+
+  .top-nav-stars-badge {
+    padding: 4px 12px;
+    font-size: 14px;
+    gap: 4px;
+  }
+
+  .top-nav-profile-badge {
+    padding: 4px 10px;
+    font-size: 12px;
+    max-width: 85px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .top-nav-mute-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .top-nav-adult-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  /* Burbuja de habla compacta */
+  .speech-bubble {
+    font-size: 15px;
+    padding: 8px 14px;
+    max-width: 280px;
+  }
+
+  /* Ximenita en celulares: no ocupa espacio de juego, se ubica como amiga flotante */
+  #game-ximenita-slot,
+  .ximenita-game-anchor {
+    position: fixed !important;
+    bottom: 8px !important;
+    right: 8px !important;
+    margin: 0 !important;
+    align-self: unset !important;
+    z-index: 95 !important;
+    pointer-events: none !important;
+    transform: scale(0.60) !important;
+    transform-origin: bottom right !important;
+  }
+
+  /* Modales de celebración y cambio de perfil */
+  .celebration-modal-overlay {
+    padding: 12px;
+  }
+
+  .celebration-card {
+    padding: 20px 16px !important;
+    max-width: 92vw !important;
+    border-radius: 20px !important;
+  }
+
+  .celebration-card h2 {
+    font-size: 22px !important;
+  }
+
+  .celebration-card .btn-continue {
+    font-size: 18px !important;
+    padding: 12px 20px !important;
+    width: 100% !important;
+  }
+}
+
+/* Modo Apaisado en Celulares (Landscape < 520px de alto) */
+@media (max-height: 520px) and (orientation: landscape) {
+  .top-bar {
+    padding: 4px 10px;
+    min-height: 42px;
+  }
+
+  #game-ximenita-slot,
+  .ximenita-game-anchor {
+    transform: scale(0.50) !important;
+  }
+}
+
+
 

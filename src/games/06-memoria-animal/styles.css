@@ -58,3 +58,26 @@
   background: linear-gradient(135deg, #A855F7, #7E22CE);
   color: transparent;
 }
+
+@media (max-width: 680px) {
+  .memoria-game {
+    padding: 8px 10px 16px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .cards-grid {
+    gap: 8px;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .mem-card {
+    width: auto;
+    height: 80px;
+    font-size: 34px;
+    border-width: 3px;
+    border-radius: var(--radius-sm);
+  }
+}
+

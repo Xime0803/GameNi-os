@@ -35,3 +35,35 @@
   flex-wrap: wrap;
   justify-content: center;
 }
+
+@media (max-width: 680px) {
+  .habitat-game {
+    padding: 8px 10px 16px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .habitat-stage {
+    gap: 12px;
+  }
+
+  .habitat-animal-box {
+    padding: 12px 20px;
+    font-size: 38px;
+    border-width: 3px;
+  }
+
+  .habitats-row {
+    gap: 8px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .habitats-row .btn-big {
+    min-width: 90px;
+    padding: 10px 14px;
+    font-size: 17px;
+    flex: 1;
+  }
+}
+

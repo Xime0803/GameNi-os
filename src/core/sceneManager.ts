@@ -29,7 +29,8 @@ export class SceneManager {
     this.contentContainer = document.createElement('main');
     this.contentContainer.className = 'scene-content-area';
     this.contentContainer.style.flex = '1';
-    this.contentContainer.style.overflow = 'hidden';
+    this.contentContainer.style.overflowY = 'auto';
+    this.contentContainer.style.overflowX = 'hidden';
     this.contentContainer.style.position = 'relative';
     this.rootElement.appendChild(this.contentContainer);
 
@@ -70,7 +71,8 @@ export class SceneManager {
     gameStage.className = 'game-scene-mount';
     gameStage.style.width = '100%';
     gameStage.style.height = '100%';
-    gameStage.style.overflow = 'hidden';
+    gameStage.style.overflowY = 'auto';
+    gameStage.style.overflowX = 'hidden';
     gameStage.style.position = 'relative';
 
     this.contentContainer.appendChild(gameStage);

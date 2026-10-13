@@ -86,3 +86,35 @@
   width: 100%;
   margin-top: 16px;
 }
+
+@media (max-width: 680px) {
+  .pomni-game {
+    padding: 8px 10px 16px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .pomni-speech-bubble {
+    font-size: 14px !important;
+    padding: 6px 12px !important;
+  }
+
+  .pomni-items-box {
+    padding: 12px 14px;
+    gap: 8px;
+    min-height: 120px;
+    border-width: 3px;
+  }
+
+  .count-item {
+    font-size: 34px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .pomni-options {
+    gap: 10px;
+    margin-top: 8px;
+  }
+}
+

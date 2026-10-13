@@ -316,6 +316,106 @@ export class MapScreen {
         left: 24px;
         pointer-events: none;
       }
+
+      /* Adaptación completa para celulares (Smartphones < 680px) */
+      @media (max-width: 680px) {
+        .map-screen-container {
+          padding: 8px 10px 80px;
+        }
+
+        .circus-map-wrapper {
+          gap: 12px;
+        }
+
+        .circus-banner {
+          padding: 12px 14px;
+          gap: 10px;
+          border-width: 3px;
+        }
+
+        .tent-icon {
+          font-size: 38px;
+        }
+
+        .tent-text h2 {
+          font-size: 18px;
+        }
+
+        .tent-text p {
+          font-size: 13px;
+        }
+
+        .dec-tag {
+          font-size: 12px;
+          padding: 4px 10px;
+        }
+
+        .circus-panel-quicklink {
+          font-size: 12px;
+          padding: 5px 10px;
+        }
+
+        .attractions-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+        }
+
+        .attraction-card {
+          padding: 12px 8px;
+          border-radius: var(--radius-md);
+          border-width: 3px;
+        }
+
+        .attraction-character-badge {
+          top: 6px;
+          left: 6px;
+          padding: 2px 6px;
+          font-size: 10px;
+        }
+
+        .attraction-character-badge .char-name {
+          display: none;
+        }
+
+        .attraction-icon-circle {
+          width: 52px;
+          height: 52px;
+          margin-top: 18px;
+          margin-bottom: 6px;
+          border-width: 3px;
+        }
+
+        .attraction-emoji {
+          font-size: 26px;
+        }
+
+        .attraction-title {
+          font-size: 15px;
+          margin-bottom: 4px;
+        }
+
+        .attraction-area-pill {
+          font-size: 10px;
+          padding: 2px 8px;
+          margin-bottom: 4px;
+        }
+
+        .attraction-desc {
+          font-size: 11px;
+          line-height: 1.2;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
+        .map-ximenita-anchor {
+          bottom: 8px;
+          left: 8px;
+          transform: scale(0.65);
+          transform-origin: bottom left;
+        }
+      }
     `;
     document.head.appendChild(style);
   }

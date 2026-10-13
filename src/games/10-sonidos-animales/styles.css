@@ -175,3 +175,65 @@
   align-self: flex-start;
   margin-left: 20px;
 }
+
+@media (max-width: 680px) {
+  .sonidos-game {
+    padding: 8px 10px 16px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .game-header-info h2 {
+    font-size: 20px;
+  }
+
+  .game-sub-instruction {
+    font-size: 13px;
+  }
+
+  .sound-box {
+    padding: 10px 16px;
+    gap: 12px;
+    border-radius: 20px;
+    border-width: 3px;
+  }
+
+  .sound-box-speaker {
+    font-size: 36px;
+  }
+
+  .caption-title {
+    font-size: 16px;
+  }
+
+  .caption-hint {
+    font-size: 12px;
+  }
+
+  .animal-cards-grid {
+    gap: 10px;
+    max-width: 360px;
+  }
+
+  .animal-choice-card {
+    min-width: 125px;
+    padding: 10px 12px;
+    border-radius: 18px;
+    border-width: 3px;
+    flex: 1;
+  }
+
+  .animal-choice-emoji {
+    font-size: 42px;
+  }
+
+  .animal-choice-name {
+    font-size: 17px;
+  }
+
+  .animal-choice-sound {
+    font-size: 12px;
+    padding: 2px 8px;
+  }
+}
+

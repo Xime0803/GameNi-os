@@ -46,3 +46,43 @@
   gap: 20px;
   justify-content: center;
 }
+
+@media (max-width: 680px) {
+  .sumas-game {
+    padding: 8px 10px 16px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .sumas-stage {
+    gap: 12px;
+  }
+
+  .equation-card {
+    padding: 12px 18px;
+    gap: 10px;
+    font-size: 28px;
+    border-width: 3px;
+  }
+
+  .fruit-cluster {
+    font-size: 24px;
+    gap: 4px;
+    max-width: 120px;
+  }
+
+  .options-row {
+    gap: 10px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .options-row .btn-big {
+    min-width: 58px;
+    min-height: 52px;
+    padding: 8px 14px;
+    font-size: 22px;
+    flex: 1;
+  }
+}
+

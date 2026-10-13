@@ -18,3 +18,62 @@
   flex: 1;
   justify-content: center;
 }
+
+@media (max-width: 680px) {
+  .traza-vocales-game {
+    padding: 8px 10px 14px;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .traza-vocales-stage {
+    gap: 8px;
+  }
+
+  .gangle-bubble {
+    font-size: 14px !important;
+    padding: 6px 12px !important;
+  }
+
+  .canvas-card-wrapper {
+    padding: 8px 10px;
+    border-width: 3px;
+    gap: 8px;
+  }
+
+  .tracing-canvas {
+    width: min(76vw, 240px);
+    height: min(44vh, 320px);
+  }
+
+  .trazado-actions {
+    gap: 12px;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .traza-vocales-game {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 4px 10px;
+  }
+
+  .traza-vocales-stage {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .tracing-canvas {
+    width: 170px;
+    height: 230px;
+  }
+
+  .trazado-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+

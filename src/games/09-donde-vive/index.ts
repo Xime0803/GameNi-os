@@ -16,9 +16,15 @@ const QUESTIONS: HabitatQuestion[] = [
   { animal: '🦜', name: 'Guacamayo', correctHabitat: 'Selva' },
   { animal: '🐬', name: 'Delfín', correctHabitat: 'Mar' },
   { animal: '🦙', name: 'Vicuña', correctHabitat: 'Montaña' },
-  { animal: '🐒', name: 'Monito titi', correctHabitat: 'Selva' },
+  { animal: '🐒', name: 'Monito tití', correctHabitat: 'Selva' },
   { animal: '🐢', name: 'Tortuga marina', correctHabitat: 'Mar' },
   { animal: '🦅', name: 'Cóndor andino', correctHabitat: 'Montaña' },
+  { animal: '🐆', name: 'Otorongo', correctHabitat: 'Selva' },
+  { animal: '🐧', name: 'Pingüino de Humboldt', correctHabitat: 'Mar' },
+  { animal: '🐻', name: 'Oso de anteojos', correctHabitat: 'Montaña' },
+  { animal: '🐦', name: 'Gallito de las rocas', correctHabitat: 'Selva' },
+  { animal: '🐋', name: 'Ballena jorobada', correctHabitat: 'Mar' },
+  { animal: '🦙', name: 'Alpaca', correctHabitat: 'Montaña' },
 ];
 
 export class DondeViveGame implements MiniGame {

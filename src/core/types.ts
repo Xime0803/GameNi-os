@@ -70,6 +70,7 @@ export interface TracingResult {
   covered: number; // 0.0 a 1.0
   passed: boolean;
   wentBackwards: boolean;
+  wentOffTrack?: boolean;
   message?: string;
 }
 

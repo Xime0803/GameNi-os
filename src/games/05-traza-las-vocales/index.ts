@@ -56,8 +56,8 @@ export class TrazaLasVocalesGame implements MiniGame {
           <h2>🎨 Traza las vocales (Ronda <span id="round-num">1</span>/8)</h2>
         </div>
         <div class="traza-vocales-stage">
-          <div class="gangle-bubble" style="background: #FFF; padding: 10px 18px; border-radius: 20px; border: 3px solid #22C55E; font-size: 19px; font-weight: 700; color: #15803D;">
-            🐸 Gangle dice: "¡Dibuja la letra sin soltar tu dedito!"
+          <div class="gangle-bubble" id="gangle-message" style="background: #FFF; padding: 10px 18px; border-radius: 20px; border: 3px solid #22C55E; font-size: 19px; font-weight: 700; color: #15803D;">
+            🐸 Gangle dice: "¡Dibuja la letra sin salirte del caminito!"
           </div>
           <div class="canvas-card-wrapper">
             <canvas id="letter-canvas" class="tracing-canvas" width="280" height="380"></canvas>
@@ -75,18 +75,39 @@ export class TrazaLasVocalesGame implements MiniGame {
     `;
 
     const canvas = this.container.querySelector('#letter-canvas') as HTMLCanvasElement;
-    this.tracingService = new TracingService(canvas, 0.50);
+    this.tracingService = new TracingService(canvas, 0.65);
 
     const fillBar = this.container.querySelector('#letter-coverage-bar') as HTMLElement;
-    this.tracingService.setOnStrokeUpdate((cov) => {
+    const msgEl = this.container.querySelector('#gangle-message') as HTMLElement | null;
+
+    this.tracingService.setOnStrokeUpdate((cov, isOffTrack) => {
       const pct = Math.min(100, Math.round(cov * 100));
       fillBar.style.width = `${pct}%`;
-      if (pct >= 50) {
+
+      if (isOffTrack) {
+        fillBar.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
+        fillBar.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.7)';
+        if (msgEl) {
+          msgEl.textContent = '⚠️ ¡Cuidado, te saliste de la línea! Usa "Borrar" para empezar de nuevo.';
+          msgEl.style.color = '#DC2626';
+          msgEl.style.borderColor = '#EF4444';
+        }
+      } else if (cov >= 0.65) {
         fillBar.style.background = 'linear-gradient(90deg, #10B981, #059669)';
-        fillBar.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.6)';
+        fillBar.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.7)';
+        if (msgEl) {
+          msgEl.textContent = '✨ ¡Genial! ¡Lo lograste sin salirte! Presiona "¡Listo!"';
+          msgEl.style.color = '#15803D';
+          msgEl.style.borderColor = '#22C55E';
+        }
       } else {
         fillBar.style.background = 'linear-gradient(90deg, #F59E0B, #EAB308)';
         fillBar.style.boxShadow = 'none';
+        if (msgEl) {
+          msgEl.textContent = '🐸 Gangle dice: "¡Dibuja la letra sin salirte del caminito!"';
+          msgEl.style.color = '#15803D';
+          msgEl.style.borderColor = '#22C55E';
+        }
       }
     });
 
@@ -98,6 +119,13 @@ export class TrazaLasVocalesGame implements MiniGame {
       onClick: () => {
         this.tracingService?.clear();
         fillBar.style.width = '0%';
+        fillBar.style.background = 'linear-gradient(90deg, #F59E0B, #EAB308)';
+        fillBar.style.boxShadow = 'none';
+        if (msgEl) {
+          msgEl.textContent = '🐸 Gangle dice: "¡Dibuja la letra sin salirte del caminito!"';
+          msgEl.style.color = '#15803D';
+          msgEl.style.borderColor = '#22C55E';
+        }
         audioService.playClick();
       },
     });
@@ -139,7 +167,18 @@ export class TrazaLasVocalesGame implements MiniGame {
     this.tracingService.setGuide(guide);
 
     const fillBar = this.container.querySelector('#letter-coverage-bar') as HTMLElement;
-    if (fillBar) fillBar.style.width = '0%';
+    if (fillBar) {
+      fillBar.style.width = '0%';
+      fillBar.style.background = 'linear-gradient(90deg, #F59E0B, #EAB308)';
+      fillBar.style.boxShadow = 'none';
+    }
+
+    const msgEl = this.container.querySelector('#gangle-message') as HTMLElement | null;
+    if (msgEl) {
+      msgEl.textContent = '🐸 Gangle dice: "¡Dibuja la letra sin salirte del caminito!"';
+      msgEl.style.color = '#15803D';
+      msgEl.style.borderColor = '#22C55E';
+    }
 
     this.ximenita?.narrate(`¡Tracemos la letra ${this.currentLetter}!`);
   }
@@ -147,22 +186,41 @@ export class TrazaLasVocalesGame implements MiniGame {
   private evaluateStroke(): void {
     if (!this.tracingService) return;
     const result = this.tracingService.evaluate();
+    const msgEl = this.container?.querySelector('#gangle-message') as HTMLElement | null;
 
     if (result.passed) {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
       audioService.playSuccess();
-      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
+      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien sin salirte!');
+      if (msgEl) {
+        msgEl.textContent = '🎉 ¡Excelente! ¡Lo trazaste perfecto!';
+        msgEl.style.color = '#15803D';
+      }
 
       if (levelChanged) {
         setTimeout(() => this.ximenita?.narrate(`¡Avanzaste al nivel ${newLevel}!`), 1200);
       }
       setTimeout(() => this.startRound(), 1800);
+    } else if (result.wentOffTrack) {
+      this.misses++;
+      this.difficulty.recordMiss();
+      audioService.playGentleHint();
+      this.ximenita?.giveHint('¡Te saliste de la línea! Presiona Borrar y sigue el caminito azul despacito.');
+      if (msgEl) {
+        msgEl.textContent = '❌ ¡Te saliste del caminito! Borra e inténtalo otra vez despacito.';
+        msgEl.style.color = '#DC2626';
+        msgEl.style.borderColor = '#EF4444';
+      }
     } else {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint('¡Casi lo logras! Sigue la línea azul un poquito más con tu dedito.');
+      this.ximenita?.giveHint('¡Casi lo logras! Te faltó completar un pedacito de la línea azul.');
+      if (msgEl) {
+        msgEl.textContent = '✏️ ¡Casi! Traza un poquito más para completar la letra.';
+        msgEl.style.color = '#D97706';
+      }
     }
   }
 

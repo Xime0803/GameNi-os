@@ -74,18 +74,36 @@ export class TrazaLosNumerosGame implements MiniGame {
     `;
 
     const canvas = this.container.querySelector('#tracing-canvas') as HTMLCanvasElement;
-    this.tracingService = new TracingService(canvas, 0.50);
+    this.tracingService = new TracingService(canvas, 0.65);
 
     const fillBar = this.container.querySelector('#coverage-bar-fill') as HTMLElement;
-    this.tracingService.setOnStrokeUpdate((cov) => {
+    const msgEl = this.container.querySelector('#kinger-message') as HTMLElement | null;
+
+    this.tracingService.setOnStrokeUpdate((cov, isOffTrack) => {
       const pct = Math.min(100, Math.round(cov * 100));
       fillBar.style.width = `${pct}%`;
-      if (pct >= 50) {
+
+      if (isOffTrack) {
+        fillBar.style.background = 'linear-gradient(90deg, #EF4444, #DC2626)';
+        fillBar.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.7)';
+        if (msgEl) {
+          msgEl.textContent = '⚠️ ¡Cuidado, te saliste de la línea! Usa "Borrar" para empezar de nuevo.';
+          msgEl.style.color = '#DC2626';
+        }
+      } else if (cov >= 0.65) {
         fillBar.style.background = 'linear-gradient(90deg, #10B981, #059669)';
-        fillBar.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.6)';
+        fillBar.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.7)';
+        if (msgEl) {
+          msgEl.textContent = '✨ ¡Genial! ¡Lo lograste sin salirte! Presiona "¡Listo!"';
+          msgEl.style.color = '#059669';
+        }
       } else {
         fillBar.style.background = 'linear-gradient(90deg, #F59E0B, #EAB308)';
         fillBar.style.boxShadow = 'none';
+        if (msgEl) {
+          msgEl.textContent = '🐘 Kinger dice: "¡Sigue el caminito mágico sin salirte!"';
+          msgEl.style.color = '#4B5563';
+        }
       }
     });
 
@@ -97,6 +115,12 @@ export class TrazaLosNumerosGame implements MiniGame {
       onClick: () => {
         this.tracingService?.clear();
         fillBar.style.width = '0%';
+        fillBar.style.background = 'linear-gradient(90deg, #F59E0B, #EAB308)';
+        fillBar.style.boxShadow = 'none';
+        if (msgEl) {
+          msgEl.textContent = '🐘 Kinger dice: "¡Sigue el caminito mágico sin salirte!"';
+          msgEl.style.color = '#4B5563';
+        }
         audioService.playClick();
       },
     });
@@ -150,7 +174,17 @@ export class TrazaLosNumerosGame implements MiniGame {
     this.tracingService.setGuide(guide);
 
     const fillBar = this.container.querySelector('#coverage-bar-fill') as HTMLElement;
-    if (fillBar) fillBar.style.width = '0%';
+    if (fillBar) {
+      fillBar.style.width = '0%';
+      fillBar.style.background = 'linear-gradient(90deg, #F59E0B, #EAB308)';
+      fillBar.style.boxShadow = 'none';
+    }
+
+    const msgEl = this.container.querySelector('#kinger-message') as HTMLElement | null;
+    if (msgEl) {
+      msgEl.textContent = '🐘 Kinger dice: "¡Sigue el caminito mágico sin salirte!"';
+      msgEl.style.color = '#4B5563';
+    }
 
     const word = numberToSpanishWord(this.targetNumber);
     this.ximenita?.narrate(`¡Tracemos el número ${word}!`);
@@ -159,22 +193,40 @@ export class TrazaLosNumerosGame implements MiniGame {
   private evaluateStroke(): void {
     if (!this.tracingService) return;
     const result = this.tracingService.evaluate();
+    const msgEl = this.container?.querySelector('#kinger-message') as HTMLElement | null;
 
     if (result.passed) {
       this.hits++;
       const { levelChanged, newLevel } = this.difficulty.recordHit();
       audioService.playSuccess();
-      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
+      this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien sin salirte!');
+      if (msgEl) {
+        msgEl.textContent = '🎉 ¡Excelente! ¡Lo trazaste perfecto!';
+        msgEl.style.color = '#059669';
+      }
 
       if (levelChanged) {
         setTimeout(() => this.ximenita?.narrate(`¡Avanzaste al nivel ${newLevel}!`), 1200);
       }
       setTimeout(() => this.startRound(), 1800);
+    } else if (result.wentOffTrack) {
+      this.misses++;
+      this.difficulty.recordMiss();
+      audioService.playGentleHint();
+      this.ximenita?.giveHint('¡Te saliste de la línea! Presiona Borrar y sigue el caminito azul despacito.');
+      if (msgEl) {
+        msgEl.textContent = '❌ ¡Te saliste del caminito! Borra e inténtalo otra vez despacito.';
+        msgEl.style.color = '#DC2626';
+      }
     } else {
       this.misses++;
       this.difficulty.recordMiss();
       audioService.playGentleHint();
-      this.ximenita?.giveHint('¡Casi lo logras! Sigue la línea azul un poquito más con tu dedito.');
+      this.ximenita?.giveHint('¡Casi lo logras! Te faltó completar un pedacito de la línea azul.');
+      if (msgEl) {
+        msgEl.textContent = '✏️ ¡Casi! Traza un poquito más para completar el número.';
+        msgEl.style.color = '#D97706';
+      }
     }
   }
 

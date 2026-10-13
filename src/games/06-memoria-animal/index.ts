@@ -9,15 +9,21 @@ interface CardItem {
   id: number;
   emoji: string;
   name: string;
+  vocalId: string;
 }
 
-const ALL_CARDS = [
-  { emoji: '🐒', name: 'Mono Pomni' },
-  { emoji: '🐰', name: 'Conejo Jax' },
-  { emoji: '🦁', name: 'Leona Ragatha' },
-  { emoji: '🐸', name: 'Rana Gangle' },
-  { emoji: '🐘', name: 'Elefante Kinger' },
-  { emoji: '🐝', name: 'Abeja Zooble' },
+const ALL_CARDS: Omit<CardItem, 'id'>[] = [
+  { emoji: '🐒', name: 'Mono Pomni', vocalId: 'pomni' },
+  { emoji: '🐰', name: 'Conejo Jax', vocalId: 'jax' },
+  { emoji: '🦁', name: 'Leona Ragatha', vocalId: 'ragatha' },
+  { emoji: '🐸', name: 'Rana Gangle', vocalId: 'gangle' },
+  { emoji: '🐘', name: 'Elefante Kinger', vocalId: 'kinger' },
+  { emoji: '🦜', name: 'Tucán Caine', vocalId: 'caine' },
+  { emoji: '🐶', name: 'Perrito', vocalId: 'perro' },
+  { emoji: '🐱', name: 'Gatito', vocalId: 'gato' },
+  { emoji: '🦆', name: 'Patito', vocalId: 'pato' },
+  { emoji: '🐮', name: 'Vaquita', vocalId: 'vaca' },
+  { emoji: '🐑', name: 'Ovejita', vocalId: 'oveja' },
 ];
 
 export class MemoriaAnimalGame implements MiniGame {
@@ -95,9 +101,10 @@ export class MemoriaAnimalGame implements MiniGame {
     const roundNumEl = this.container.querySelector('#round-num');
     if (roundNumEl) roundNumEl.textContent = this.currentRound.toString();
 
-    // 4 parejas (8 cartas) para rondas ágiles de 3 a 5 min
+    // 4 parejas (8 cartas) seleccionadas al azar en cada ronda
     const pairsCount = 4;
-    const selected = ALL_CARDS.slice(0, pairsCount);
+    const shuffledCards = [...ALL_CARDS].sort(() => Math.random() - 0.5);
+    const selected = shuffledCards.slice(0, pairsCount);
     const rawDeck = [...selected, ...selected];
     this.deck = rawDeck
       .map((item, idx) => ({ ...item, id: idx }))
@@ -145,8 +152,15 @@ export class MemoriaAnimalGame implements MiniGame {
         this.hits++;
         this.matchedIndices.add(first);
         this.matchedIndices.add(second);
+        const matchedAnimal = this.deck[first];
         this.flippedIndices = [];
+
+        // Sonido de éxito + voz real del animal encontrado
         audioService.playSuccess();
+        setTimeout(() => {
+          audioService.playAnimalVocal(matchedAnimal.vocalId);
+        }, 350);
+
         this.ximenita?.celebrate('¡Excelente, lo hiciste muy bien!');
 
         if (this.matchedIndices.size === this.deck.length) {

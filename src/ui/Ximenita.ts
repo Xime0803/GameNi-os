@@ -51,16 +51,18 @@ export class XimenitaComponent {
 
   public celebrate(customText?: string, onFinish?: () => void): void {
     const defaultPhrases = [
-      '¡Excelente, lo hiciste muy bien!',
-      '¡Muy bien, lo lograste!',
-      '¡Excelente! ¡Qué bien lo hiciste!',
+      '¡Siii! ¡Lo hiciste genial!',
+      '¡Yeeei! ¡Qué divertido, lo lograste!',
+      '¡Bravo! ¡Eres increíble!',
+      '¡Esooo! ¡Estrellita brillante para ti!',
+      '¡Guau! ¡Qué súper campeón eres!',
     ];
     const text = customText || defaultPhrases[Math.floor(Math.random() * defaultPhrases.length)];
 
     this.setState('celebrating');
     this.showSpeechBubble(text);
 
-    speechService.speak(text, () => {
+    speechService.speakCelebration(text, () => {
       this.setState('idle');
       this.hideSpeechBubble();
       if (onFinish) onFinish();
@@ -69,16 +71,17 @@ export class XimenitaComponent {
 
   public giveHint(customText?: string, onFinish?: () => void): void {
     const defaultPhrases = [
-      '¡Vamos, tú puedes! ¡Inténtalo de nuevo!',
-      'Casi, inténtalo otra vez, ¡vamos juntos!',
-      '¡Vamos, tú puedes! Intenta otra vez.',
+      '¡Uy, casi casi! ¡Intentémoslo juntos otra vez!',
+      '¡Tú puedes, amiguito! ¡Vamos de nuevo!',
+      '¡Cuenta despacito, yo sé que puedes!',
+      '¡Qué divertido! ¡Vamos a intentarlo una vez más!',
     ];
     const text = customText || defaultPhrases[Math.floor(Math.random() * defaultPhrases.length)];
 
     this.setState('hint');
     this.showSpeechBubble(text);
 
-    speechService.speak(text, () => {
+    speechService.speakHint(text, () => {
       this.setState('idle');
       this.hideSpeechBubble();
       if (onFinish) onFinish();

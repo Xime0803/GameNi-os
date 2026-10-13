@@ -64,7 +64,7 @@ export class AudioService {
     osc.stop(ctx.currentTime + 0.08);
   }
 
-  // Tono melódico pedagógico de marimba con respuesta táctil instantánea (0ms de latencia)
+  // Tono melódico pedagógico de marimba acústica natural con ataque de maza de madera
   public playNumberTone(count: number): void {
     if (this.isMuted) return;
     const ctx = this.getContext();
@@ -81,36 +81,46 @@ export class AudioService {
     const freq = scale[idx];
     const now = ctx.currentTime;
 
-    // Onda fundamental (marimba cálida)
+    // Filtro acústico de cuerpo de madera (elimina asperezas digitales)
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2600, now);
+    filter.Q.setValueAtTime(1.2, now);
+
+    // 1. Onda fundamental pura y cálida (cuerpo del instrumento)
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.type = 'triangle';
+    osc.type = 'sine';
     osc.frequency.setValueAtTime(freq, now);
 
-    // Segundo armónico para brillo percusivo
-    const osc2 = ctx.createOscillator();
-    const gain2 = ctx.createGain();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(freq * 2, now);
+    // Curva anti-clic de ataque suave (3ms) y decaimiento resonante natural
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.linearRampToValueAtTime(0.28, now + 0.004);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
 
-    gain.gain.setValueAtTime(0.25, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    // 2. Sobretono armónico de barra de madera (4to armónico con decaimiento rápido percusivo)
+    const oscHarmonic = ctx.createOscillator();
+    const gainHarmonic = ctx.createGain();
+    oscHarmonic.type = 'sine';
+    oscHarmonic.frequency.setValueAtTime(freq * 3.98, now);
 
-    gain2.gain.setValueAtTime(0.08, now);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+    gainHarmonic.gain.setValueAtTime(0.001, now);
+    gainHarmonic.gain.linearRampToValueAtTime(0.09, now + 0.003);
+    gainHarmonic.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
 
     osc.connect(gain);
-    osc2.connect(gain2);
-    gain.connect(ctx.destination);
-    gain2.connect(ctx.destination);
+    oscHarmonic.connect(gainHarmonic);
+    gain.connect(filter);
+    gainHarmonic.connect(filter);
+    filter.connect(ctx.destination);
 
     osc.start(now);
-    osc2.start(now);
-    osc.stop(now + 0.32);
-    osc2.stop(now + 0.32);
+    oscHarmonic.start(now);
+    osc.stop(now + 0.38);
+    oscHarmonic.stop(now + 0.38);
   }
 
-  // Acorde mayor de éxito (Do - Mi - Sol - Do)
+  // Acorde mayor de éxito cálido y festivo (Celesta / Campanitas mágicas)
   public playSuccess(): void {
     if (this.isMuted) return;
     const ctx = this.getContext();
@@ -118,25 +128,45 @@ export class AudioService {
 
     const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
     notes.forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
       const startTime = ctx.currentTime + idx * 0.07;
 
-      osc.type = 'triangle';
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(3200, startTime);
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.16, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.4);
+      // Armónico sutil de campanilla
+      const bell = ctx.createOscillator();
+      const bellGain = ctx.createGain();
+      bell.type = 'sine';
+      bell.frequency.setValueAtTime(freq * 2.76, startTime);
+
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(0.18, startTime + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.45);
+
+      bellGain.gain.setValueAtTime(0.001, startTime);
+      bellGain.gain.linearRampToValueAtTime(0.05, startTime + 0.003);
+      bellGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.18);
 
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      bell.connect(bellGain);
+      gain.connect(filter);
+      bellGain.connect(filter);
+      filter.connect(ctx.destination);
 
       osc.start(startTime);
-      osc.stop(startTime + 0.4);
+      bell.start(startTime);
+      osc.stop(startTime + 0.48);
+      bell.stop(startTime + 0.48);
     });
   }
 
-  // Sonido de estrella brillante mágica
+  // Sonido de estrella brillante mágica (Arpegio suave con brillo)
   public playStar(): void {
     if (this.isMuted) return;
     const ctx = this.getContext();
@@ -144,47 +174,54 @@ export class AudioService {
 
     const notes = [587.33, 739.99, 880.0, 1174.66, 1479.98];
     notes.forEach((freq, idx) => {
+      const startTime = ctx.currentTime + idx * 0.055;
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      const startTime = ctx.currentTime + idx * 0.06;
-
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.18, startTime);
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(0.16, startTime + 0.004);
       gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.45);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
 
       osc.start(startTime);
-      osc.stop(startTime + 0.45);
+      osc.stop(startTime + 0.48);
     });
   }
 
-  // Pista suave para animar ante error (cero sensación de derrota)
+  // Pista suave para animar ante error (cero sensación de derrota, maza de madera amable)
   public playGentleHint(): void {
     if (this.isMuted) return;
     const ctx = this.getContext();
     if (!ctx) return;
 
-    const notes = [392.0, 440.0]; // G4 a A4 amable
+    const notes = [392.0, 523.25]; // Sol4 a Do5 cálido
     notes.forEach((freq, idx) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
       const startTime = ctx.currentTime + idx * 0.12;
 
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2000, startTime);
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, startTime);
 
-      gain.gain.setValueAtTime(0.09, startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.28);
+      gain.gain.setValueAtTime(0.001, startTime);
+      gain.gain.linearRampToValueAtTime(0.12, startTime + 0.005);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.32);
 
       osc.connect(gain);
-      gain.connect(ctx.destination);
+      gain.connect(filter);
+      filter.connect(ctx.destination);
 
       osc.start(startTime);
-      osc.stop(startTime + 0.28);
+      osc.stop(startTime + 0.34);
     });
   }
 

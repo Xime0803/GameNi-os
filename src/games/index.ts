@@ -9,6 +9,8 @@ import { SumasDeLaSelvaGame } from './07-sumas-de-la-selva';
 import { PatronesAnimalesGame } from './08-patrones-animales';
 import { DondeViveGame } from './09-donde-vive';
 import { SonidosAnimalesGame } from './10-sonidos-animales';
+import { ConectaNumerosGame } from './11-conecta-numeros';
+import { SumasInicialGame } from './12-sumas-inicial';
 
 /**
  * Registro Central Flexible de Juegos
@@ -28,4 +30,7 @@ export const ALL_GAMES: MiniGame[] = [
   new PatronesAnimalesGame(),
   new DondeViveGame(),
   new SonidosAnimalesGame(),
+  new ConectaNumerosGame(),
+  new SumasInicialGame(),
 ];
+

@@ -1,0 +1,374 @@
+/* ==========================================================================
+   Juego 12: Primeras Sumas (3 a 5 Años) - Enfoque Concreto y Manipulativo
+   Pedagogía CNEB Ciclo II Inicial: Juntar colecciones de 1 a 5 objetos
+   ========================================================================== */
+
+.sumas-inicial-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  min-height: calc(100dvh - 90px);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.sumas-inicial-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.sumas-inicial-header h2 {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  color: #1E293B;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sumas-inicial-speech {
+  background: #FFFFFF;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 2px solid #F59E0B;
+  color: #B45309;
+  font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Escenario de las dos canastas */
+.sumas-baskets-stage {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 2.5vw, 20px);
+  margin: 12px 0;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Cada canasta o plato de objetos */
+.sumas-basket {
+  background: #FFFBEB;
+  border: 3px dashed #F59E0B;
+  border-radius: 24px;
+  padding: 14px 16px;
+  min-width: clamp(110px, 24vw, 180px);
+  min-height: clamp(90px, 18vw, 130px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.12);
+  position: relative;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.sumas-basket-label {
+  position: absolute;
+  top: -12px;
+  background: #F59E0B;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.sumas-basket-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Objeto tangible tocable para contar */
+.tangible-item {
+  position: relative;
+  font-size: clamp(2.2rem, 5.5vw, 3.2rem);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tangible-item:hover {
+  transform: scale(1.18);
+}
+
+.tangible-item:active {
+  transform: scale(0.92);
+}
+
+.tangible-item.counted {
+  animation: itemBounce 0.4s ease-out;
+}
+
+@keyframes itemBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.35) translateY(-8px); }
+  100% { transform: scale(1); }
+}
+
+/* Insignia con el número de conteo que brota al tocar */
+.item-count-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 900;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  animation: popBadge 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes popBadge {
+  0% { transform: scale(0); }
+  80% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* Signo Más y Signo Igual amigables */
+.sumas-operator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.operator-badge {
+  width: clamp(38px, 8vw, 48px);
+  height: clamp(38px, 8vw, 48px);
+  border-radius: 50%;
+  background: #3B82F6;
+  color: #FFFFFF;
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+}
+
+.operator-word {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #3B82F6;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* Canasta de destino / resultado */
+.goal-basket {
+  background: #F0FDF4;
+  border: 3px solid #10B981;
+  border-radius: 24px;
+  padding: 14px 16px;
+  min-width: clamp(110px, 24vw, 180px);
+  min-height: clamp(90px, 18vw, 130px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.15);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.goal-basket-label {
+  position: absolute;
+  top: -12px;
+  background: #10B981;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 2px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.goal-basket-mystery {
+  font-size: clamp(2rem, 5vw, 3rem);
+  animation: mysteryWiggle 2s infinite ease-in-out;
+}
+
+@keyframes mysteryWiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-8deg) scale(1.05); }
+  75% { transform: rotate(8deg) scale(1.05); }
+}
+
+/* Fila de opciones de respuesta (Dual-Encoding: Número + Puntos/Mini-iconos) */
+.sumas-options-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.sumas-prompt-text {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: clamp(1rem, 2.8vw, 1.3rem);
+  font-weight: 700;
+  color: #334155;
+  text-align: center;
+}
+
+.sumas-options-row {
+  display: flex;
+  gap: clamp(12px, 3.5vw, 24px);
+  justify-content: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.sum-option-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #FFFFFF;
+  border: 3px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 10px 18px;
+  min-width: clamp(76px, 18vw, 110px);
+  min-height: clamp(74px, 16vw, 100px);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.sum-option-card:hover {
+  transform: translateY(-3px);
+  border-color: #3B82F6;
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2);
+}
+
+.sum-option-card:active {
+  transform: scale(0.95);
+}
+
+.sum-opt-number {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.sum-opt-dots {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.sum-opt-dot {
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  display: inline-block;
+}
+
+/* Animación de unión al resolver con éxito */
+.basket-celebrating {
+  animation: basketCelebrate 0.6s ease-out;
+  border-color: #10B981;
+  background: #ECFDF5;
+}
+
+@keyframes basketCelebrate {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* Footer / Slot de Ximenita */
+.sumas-inicial-footer {
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Adaptación Responsive para Móviles */
+@media (max-width: 680px) {
+  .sumas-inicial-game {
+    padding: 6px 10px;
+    min-height: calc(100dvh - 75px);
+  }
+
+  .sumas-baskets-stage {
+    gap: 6px;
+    margin: 8px 0;
+    padding: 4px;
+  }
+
+  .sumas-basket, .goal-basket {
+    padding: 10px 8px;
+    border-radius: 18px;
+    min-width: 90px;
+    min-height: 80px;
+  }
+
+  .tangible-item {
+    font-size: 2.1rem;
+  }
+
+  .operator-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 1.2rem;
+  }
+
+  .operator-word {
+    font-size: 0.65rem;
+  }
+
+  .sum-option-card {
+    padding: 8px 12px;
+    min-width: 72px;
+    min-height: 70px;
+    border-radius: 16px;
+  }
+
+  .sum-opt-number {
+    font-size: 1.8rem;
+  }
+
+  .sumas-inicial-speech {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}

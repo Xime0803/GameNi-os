@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Juego 11: Une Números y Dibujos (Conecta con Líneas)
+   Diseñado para infantes de 3 a 5 años (Móvil y Escritorio)
+   ========================================================================== */
+
+.conecta-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  min-height: calc(100dvh - 90px);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; /* Previene scroll no deseado al arrastrar líneas */
+}
+
+.conecta-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.conecta-header h2 {
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  color: #1E293B;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.conecta-speech-bubble {
+  background: #FFFFFF;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 2px solid #06B6D4;
+  color: #0E7490;
+  font-size: clamp(0.85rem, 2.5vw, 1.05rem);
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: gentlePulse 2.5s infinite ease-in-out;
+}
+
+/* Área central de juego con SVG interactivo */
+.conecta-stage {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: clamp(24px, 8vw, 70px);
+  margin-top: 10px;
+  min-height: 340px;
+  padding: 10px 4px;
+  box-sizing: border-box;
+}
+
+/* Capa SVG absoluta para dibujar las líneas elásticas */
+.conecta-svg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+
+.conecta-active-line {
+  stroke: #3B82F6;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 8 6;
+  animation: dashAnimation 0.8s linear infinite;
+  filter: drop-shadow(0 2px 6px rgba(59, 130, 246, 0.4));
+}
+
+@keyframes dashAnimation {
+  to {
+    stroke-dashoffset: -28;
+  }
+}
+
+.conecta-locked-line {
+  stroke: #10B981;
+  stroke-width: 7;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.65));
+  animation: linePop 0.35s ease-out;
+}
+
+@keyframes linePop {
+  0% {
+    stroke-width: 2;
+    opacity: 0.4;
+  }
+  60% {
+    stroke-width: 10;
+  }
+  100% {
+    stroke-width: 7;
+    opacity: 1;
+  }
+}
+
+/* Columnas de tarjetas */
+.conecta-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 12px;
+  z-index: 10;
+}
+
+.conecta-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 3px solid #E2E8F0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  touch-action: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  min-height: 64px;
+  padding: 8px 14px;
+  box-sizing: border-box;
+}
+
+.conecta-card:hover:not(.locked) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: #93C5FD;
+}
+
+.conecta-card:active:not(.locked) {
+  transform: scale(0.97);
+}
+
+.conecta-card.selected {
+  border-color: #3B82F6;
+  background: #EFF6FF;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25);
+  animation: cardPulse 1.2s infinite ease-in-out;
+}
+
+.conecta-card.locked {
+  border-color: #10B981;
+  background: #ECFDF5;
+  cursor: default;
+  opacity: 0.95;
+}
+
+.conecta-card.locked .conecta-anchor-dot {
+  background: #10B981;
+  border-color: #059669;
+  transform: scale(1.2);
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.025);
+  }
+}
+
+/* Tarjetas de números (Columna Izquierda) */
+.number-card {
+  justify-content: flex-start;
+  padding-right: 24px;
+}
+
+.number-card-badge {
+  width: clamp(48px, 10vw, 62px);
+  height: clamp(48px, 10vw, 62px);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka', 'Quicksand', sans-serif;
+  font-size: clamp(28px, 6vw, 38px);
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-right: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.number-card-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.number-card-word {
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  font-weight: 700;
+  color: #334155;
+  text-transform: capitalize;
+}
+
+.number-card-sub {
+  font-size: 0.8rem;
+  color: #64748B;
+  font-weight: 600;
+}
+
+/* Tarjetas de Dibujos (Columna Derecha) */
+.drawing-card {
+  justify-content: flex-start;
+  padding-left: 24px;
+}
+
+.drawing-card-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  flex: 1;
+}
+
+.drawing-card-item {
+  font-size: clamp(1.6rem, 4.2vw, 2.4rem);
+  display: inline-block;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.drawing-card-item:hover {
+  transform: scale(1.2) rotate(6deg);
+}
+
+.drawing-card-check {
+  font-size: 1.4rem;
+  color: #10B981;
+  font-weight: bold;
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.drawing-card.locked .drawing-card-check {
+  opacity: 1;
+}
+
+/* Puntos de anclaje (Anchor Dots) */
+.conecta-anchor-dot {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 3px solid #3B82F6;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 12;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  pointer-events: none;
+}
+
+.number-card .conecta-anchor-dot {
+  right: -10px;
+}
+
+.drawing-card .conecta-anchor-dot {
+  left: -10px;
+}
+
+/* Animación de destellos en acierto */
+.sparkle-burst {
+  position: absolute;
+  pointer-events: none;
+  font-size: 1.8rem;
+  animation: burstFloat 0.7s forwards ease-out;
+  z-index: 30;
+}
+
+@keyframes burstFloat {
+  0% {
+    transform: translate(0, 0) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tx, 0px), var(--ty, -40px)) scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* Footer / Slot de Ximenita */
+.conecta-footer {
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Adaptación Responsive para Móviles */
+@media (max-width: 680px) {
+  .conecta-game {
+    padding: 6px 10px;
+    min-height: calc(100dvh - 75px);
+  }
+
+  .conecta-stage {
+    gap: 16px;
+    margin-top: 6px;
+    min-height: 290px;
+  }
+
+  .conecta-card {
+    min-height: 56px;
+    padding: 6px 10px;
+    border-radius: 14px;
+    border-width: 2.5px;
+  }
+
+  .number-card {
+    padding-right: 18px;
+  }
+
+  .drawing-card {
+    padding-left: 18px;
+  }
+
+  .number-card-badge {
+    margin-right: 8px;
+    border-radius: 10px;
+  }
+
+  .drawing-card-item {
+    font-size: 1.5rem;
+  }
+
+  .conecta-anchor-dot {
+    width: 14px;
+    height: 14px;
+    border-width: 2.5px;
+  }
+
+  .number-card .conecta-anchor-dot {
+    right: -8px;
+  }
+
+  .drawing-card .conecta-anchor-dot {
+    left: -8px;
+  }
+
+  .conecta-speech-bubble {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+}

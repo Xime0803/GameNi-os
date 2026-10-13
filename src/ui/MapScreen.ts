@@ -119,6 +119,8 @@ export class MapScreen {
       '08-patrones-animales': '🚂',
       '09-donde-vive': '🏞️',
       '10-sonidos-animales': '🎶',
+      '11-conecta-numeros': '🔗',
+      '12-sumas-inicial': '🐣',
     };
     return emojis[gameId] || '🎪';
   }
